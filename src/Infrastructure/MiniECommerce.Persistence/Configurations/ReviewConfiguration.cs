@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MiniECommerce.Domain.Entities;
-namespace MiniECommerce.Persistence.Configurations;
+using MiniECommerceApp.Domain.Entities;
+
+namespace MiniECommerceApp.Persistence.Configuration;
+
 public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 {
     public void Configure(EntityTypeBuilder<Review> builder)
@@ -9,14 +11,13 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.HasKey(r => r.Id);
 
         builder.Property(r => r.Comment)
-            .HasMaxLength(1000);
-
-        builder.Property(r => r.Rating)
             .IsRequired();
 
-        builder.Property(r => r.CreatedAt)
-            .HasDefaultValueSql("GETDATE()");
+        builder.HasOne(r => r.Product)
+            .WithMany(p => p.Reviews)
+            .HasForeignKey(r => r.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        // UserId xarici açar yox, sadəcə property kimi saxla
+        builder.HasIndex(r => new { r.ProductId, r.UserId }).IsUnique();
     }
 }

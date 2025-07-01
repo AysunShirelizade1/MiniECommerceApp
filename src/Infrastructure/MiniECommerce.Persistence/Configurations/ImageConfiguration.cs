@@ -1,18 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using MiniECommerce.Domain.Entities;
-namespace MiniECommerce.Persistence.Configurations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MiniECommerceApp.Domain.Entities;
+
+namespace MiniECommerceApp.Persistence.Configuration;
+
 public class ImageConfiguration : IEntityTypeConfiguration<Image>
 {
     public void Configure(EntityTypeBuilder<Image> builder)
     {
-        builder.ToTable("ProductImages");
+        builder.HasKey(i => i.Id);
 
         builder.Property(i => i.ImageUrl)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(500);
 
         builder.Property(i => i.IsMain)
-            .HasDefaultValue(false);
+            .IsRequired();
 
         builder.HasOne(i => i.Product)
             .WithMany(p => p.Images)

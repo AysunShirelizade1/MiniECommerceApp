@@ -1,26 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MiniECommerce.Domain.Entities;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using MiniECommerceApp.Domain.Entities;
 
-namespace MiniECommerce.Persistence.Contexts;
+namespace MiniECommerceApp.Persistence.Contexts;
 
-public class MiniECommerceDbContext : DbContext
+public class MiniECommerceDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
 {
-    public MiniECommerceDbContext(DbContextOptions<MiniECommerceDbContext> options) : base(options)
+    public MiniECommerceDbContext(DbContextOptions<MiniECommerceDbContext> options)
+        : base(options)
     {
     }
 
-    public DbSet<Product> Products { get; set; }
-    public DbSet<Category> Categories { get; set; }
-    public DbSet<Order> Orders { get; set; }
-    public DbSet<Review> Reviews { get; set; }
-    public DbSet<Favorite> Favorites { get; set; }
+    public DbSet<Product> Products { get; set; } = null!;
+    public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<OrderProduct> OrderProducts { get; set; } = null!;
+    public DbSet<Review> Reviews { get; set; } = null!;
+    public DbSet<Favorite> Favorites { get; set; } = null!;
+    public DbSet<Image> Images { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MiniECommerceDbContext).Assembly);
-
-        
     }
 }

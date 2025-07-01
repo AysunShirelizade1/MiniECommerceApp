@@ -1,12 +1,11 @@
-﻿namespace MiniECommerce.Domain.Entities
+﻿using MiniECommerceApp.Domain.Entities;
+
+public class Order : BaseEntity
 {
-    public class Order : BaseEntity
-    {
-        public string Status { get; set; }
+    public string Status { get; set; } = null!;
 
-        public Guid BuyerId { get; set; }           // FK olaraq lazımdır
-        public User Buyer { get; set; }             // Navigation
+    public Guid BuyerId { get; set; }
+    public AppUser Buyer { get; set; } = null!;
 
-        public ICollection<OrderProduct> OrderProducts { get; set; }
-    }
+    public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
 }

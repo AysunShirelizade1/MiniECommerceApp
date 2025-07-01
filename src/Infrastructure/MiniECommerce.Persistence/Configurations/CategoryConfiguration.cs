@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MiniECommerce.Domain.Entities;
-namespace MiniECommerce.Persistence.Configurations;
+using MiniECommerceApp.Domain.Entities;
+
+namespace MiniECommerceApp.Persistence.Configuration;
+
 public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
@@ -12,9 +14,9 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.HasMany(c => c.SubCategories)
-            .WithOne(sc => sc.ParentCategory)
-            .HasForeignKey(sc => sc.ParentCategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(c => c.ParentCategory)
+            .WithMany(c => c.SubCategories)
+            .HasForeignKey(c => c.ParentCategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
