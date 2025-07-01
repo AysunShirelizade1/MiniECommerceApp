@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstracts\" />
+    <Folder Include="Abstracts\Services\" />
+    <Folder Include="Abstracts\Repositories\" />
     <Folder Include="DTOs\" />
+    <Folder Include="Validations\" />
+    <Folder Include="Shared\" />
   </ItemGroup>
 
 </Project>
