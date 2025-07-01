@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace MiniECommerceApp.Domain.Entities;
 
-namespace MiniECommerce.Domain.Entities;
-
-public class Favourite : BaseEntity
+public class Favorite : BaseEntity
 {
-    public int ProductId { get; set; }
-    public Product Product { get; set; }
+    public Guid ProductId { get; set; }
+    public Product Product { get; set; } = null!;
 
-    public int UserId { get; set; }
-    public User User { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public Guid AppUserId { get; set; }
+    public AppUser AppUser { get; set; } = null!;
 }

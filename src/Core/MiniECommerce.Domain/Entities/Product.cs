@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MiniECommerce.Domain.Entities;
+﻿using MiniECommerceApp.Domain.Entities;
 
 public class Product : BaseEntity
 {
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public string Title { get; set; } = null!;
+    public string Description { get; set; } = null!;
     public decimal Price { get; set; }
 
-    public int CategoryId { get; set; }
-    public Category Category { get; set; }
+    public Guid OwnerId { get; set; }
+    public AppUser Owner { get; set; } = null!;
 
-    public int OwnerId { get; set; }
-    public User Owner { get; set; }
+    public Guid CategoryId { get; set; }
+    public Category Category { get; set; } = null!;
 
-    public ICollection<Image> Images { get; set; }
-    public ICollection<Favourite> Favourites { get; set; }
-    public ICollection<Review> Reviews { get; set; }
-    public ICollection<OrderProduct> OrderProducts { get; set; }
+    public ICollection<Image> Images { get; set; } = new List<Image>();
+    public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+    public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

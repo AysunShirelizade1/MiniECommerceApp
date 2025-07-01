@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MiniECommerceApp.Domain.Entities;
 
-namespace MiniECommerce.Domain.Entities
+public class Order : BaseEntity
 {
-    public class Order : BaseEntity
-    {
-        public DateTime OrderDate { get; set; }
-        public string Status { get; set; }
+    public string Status { get; set; } = null!;
 
-        public ICollection<OrderProduct> OrderProducts { get; set; }
-    }
+    public Guid BuyerId { get; set; }
+    public AppUser Buyer { get; set; } = null!;
+
+    public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
 }
