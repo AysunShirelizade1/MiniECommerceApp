@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MiniECommerce.Application.Abstracts.Services
+namespace MiniECommerce.Application.Abstracts.Repositories
 {
-    internal class OrderProductService
+    public class IOrderProductRepository
     {
     }
 }

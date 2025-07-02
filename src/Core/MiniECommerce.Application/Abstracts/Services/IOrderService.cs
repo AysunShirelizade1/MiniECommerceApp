@@ -1,10 +1,10 @@
 ﻿using MiniECommerce.Application.Common;
 using MiniECommerce.Application.DTOs.Order;
-using MiniECommerce.Application.Services.Interfaces;
+using MiniECommerce.Application.Services.Repositories;
 
 namespace MiniECommerce.Application.Services;
 
-public class OrderService : IOrderService
+public class IOrderService : IOrderRepository
 {
     public Task<ServiceResult<OrderDto>> CreateOrderAsync(OrderCreateDto dto, Guid buyerId)
     {

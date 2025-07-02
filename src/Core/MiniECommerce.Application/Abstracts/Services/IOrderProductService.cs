@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiniECommerce.Application.Abstracts.Services
 {
-    internal class ImageService
+    internal class IOrderProductService
     {
     }
 }

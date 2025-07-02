@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MiniECommerce.Application.DTOs.ProductDto;
+namespace MiniECommerce.Application.DTOs.Product;
 
-public class ProductFilterDto
+public class ProductDetailDto
 {
     public Guid? CategoryId { get; set; }
     public decimal? MinPrice { get; set; }

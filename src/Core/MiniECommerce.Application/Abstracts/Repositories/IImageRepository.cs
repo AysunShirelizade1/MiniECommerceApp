@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiniECommerce.Application.Abstracts.Repositories
 {
-    public class IImageService
+    public class IImageRepository
     {
     }
 }
