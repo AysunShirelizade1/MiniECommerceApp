@@ -1,13 +1,10 @@
-﻿using MiniECommerce.Application.Common;
-using MiniECommerce.Application.DTOs.CategoryDto;
+﻿using MiniECommerceApp.Application.Repositories;
+using MiniECommerceApp.Domain.Entities;
 
+namespace MiniECommerceApp.Persistence.Repositories;
 
-namespace MiniECommerce.Application.Services.Repositories
-
+public interface ICategoryRepository : IRepository<Category>
 {
-    public interface ICategoryRepository
-    {
-        //Task<IEnumerable<CategoryDto>> GetAllAsync();
-        //Task<ServiceResult<CategoryDto>> CreateAsync(CategoryCreateDto dto);
-    }
+    Task AddAsync(object category);
+    Task<List<Category>> GetAllAsync();
 }
