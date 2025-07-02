@@ -1,43 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MiniECommerce.Application.DTOs.CategoryDto;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace MiniECommerce.WebApi.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class CategoryController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CategorysController : ControllerBase
+    private readonly ICategoryService _categoryService;
+    public CategoryController(ICategoryService categoryService)
     {
-        // GET: api/<CategoryController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        _categoryService = categoryService;
+    }
 
-        // GET api/<CategoryController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+    // GET /api/categories
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAll()
+    {
+        var categories = await _categoryService.GetAllNestedAsync();
+        return Ok(categories);
+    }
 
-        // POST api/<CategoryController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<CategoryController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<CategoryController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+    // POST /api/categories
+    // Yalnız Admin rolundakı istifadəçilər əlavə edə bilər
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Create(CategoryCreateDto dto)
+    {
+        await _categoryService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetAll), null);
     }
 }

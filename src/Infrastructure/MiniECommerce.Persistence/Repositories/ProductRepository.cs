@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using MiniECommerceApp.Application.Abstract;
+using MiniECommerceApp.Domain.Entities;
 using MiniECommerceApp.Persistence.Contexts;
 
 namespace MiniECommerceApp.Persistence.Repositories
@@ -27,6 +29,35 @@ namespace MiniECommerceApp.Persistence.Repositories
                 .Include(p => p.Category)
                 .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public IQueryable<Product> GetAllFiltered(Expression<Func<Product, bool>>? predicate = null, params Expression<Func<Product, object>>[] includeProperties)
+        {
+            IQueryable<Product> query = _context.Products;
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return query;
+        }
+
+        public async Task<Product?> GetByIdWithIncludesAsync(Guid id, params Expression<Func<Product, object>>[] includeProperties)
+        {
+            IQueryable<Product> query = _context.Products;
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return await query.FirstOrDefaultAsync(p => p.Id == id);
         }
     }
 }
