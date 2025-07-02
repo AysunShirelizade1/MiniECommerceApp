@@ -2,9 +2,10 @@
 using MiniECommerce.Application.DTOs.CategoryDto;
 
 
-namespace MiniECommerce.Application.Services.Interfaces
+namespace MiniECommerce.Application.Services.Repositories
+
 {
-    public interface ICategoryService
+    public interface ICategoryRepository
     {
         //Task<IEnumerable<CategoryDto>> GetAllAsync();
         //Task<ServiceResult<CategoryDto>> CreateAsync(CategoryCreateDto dto);

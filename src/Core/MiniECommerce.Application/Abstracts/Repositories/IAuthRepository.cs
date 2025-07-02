@@ -1,9 +1,9 @@
 ﻿using MiniECommerce.Application.Common;
 using MiniECommerce.Application.DTOs.AppUserDto;
 
-namespace MiniECommerceApp.Application.Services.Interfaces
+namespace MiniECommerceApp.Application.Services.Repositories
 {
-    public interface IAuthService
+    public interface IAuthRepository
     {
         //Task<ServiceResult<UserDto>> RegisterAsync(RegisterDto dto);
         //Task<ServiceResult<TokenDto>> LoginAsync(LoginDto dto);
