@@ -1,34 +1,70 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.DTOs.AppUserDto;
+using MiniECommerce.Domain.Entities; // Burada AppUser və AppRole üçün
+using MiniECommerceApp.Domain.Entities;
+using System.Security.Claims;
 
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly UserManager<AppUser> _userManager;
+    private readonly SignInManager<AppUser> _signInManager;
+    private readonly RoleManager<AppRole> _roleManager;
+    private readonly JwtTokenService _jwtService;
 
-    public AuthController(IAuthService authService)
+    public AuthController(
+        UserManager<AppUser> userManager,
+        SignInManager<AppUser> signInManager,
+        RoleManager<AppRole> roleManager,
+        JwtTokenService jwtService)
     {
-        _authService = authService;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _roleManager = roleManager;
+        _jwtService = jwtService;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+    public async Task<IActionResult> Register(RegisterDto dto)
     {
-        var success = await _authService.RegisterAsync(registerDto);
-        if (!success)
-            return BadRequest("User already exists or registration failed.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        return Ok("User registered successfully.");
+        var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+        if (existingUser != null)
+            return BadRequest("User already exists.");
+
+        var user = new AppUser
+        {
+            UserName = dto.Email,
+            Email = dto.Email,
+            FullName = dto.FullName
+        };
+
+        var result = await _userManager.CreateAsync(user, dto.Password);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
+
+        // ✅ AppRole istifadəsi
+        if (!await _roleManager.RoleExistsAsync(dto.Role))
+            await _roleManager.CreateAsync(new AppRole { Name = dto.Role });
+
+        await _userManager.AddToRoleAsync(user, dto.Role);
+
+        return Ok("Qeydiyyat uğurla tamamlandı.");
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    public async Task<IActionResult> Login(LoginDto dto)
     {
-        var tokenDto = await _authService.LoginAsync(loginDto);
-        if (tokenDto == null)
-            return Unauthorized("Invalid email or password.");
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+        if (user == null)
+            return Unauthorized("İstifadəçi tapılmadı");
 
-        return Ok(tokenDto);
+        var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
+        return Ok(result);
     }
 }
