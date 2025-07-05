@@ -1,15 +1,12 @@
 ﻿using MiniECommerce.Application.DTOs.Order;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace MiniECommerce.Application.Abstracts.Services;
+namespace MiniECommerce.Application.Abstractions.Services;
 
 public interface IOrderService
 {
-    Task<IEnumerable<OrderListDto>> GetAllAsync();
+    Task<List<OrderListDto>> GetAllAsync();
     Task<OrderDetailDto?> GetByIdAsync(Guid id);
-    Task CreateAsync(OrderCreateDto dto);
-    Task UpdateAsync(OrderUpdateDto dto);
+    Task<Guid> CreateAsync(OrderCreateDto dto, Guid buyerId);
+    Task UpdateStatusAsync(OrderUpdateDto dto);
     Task DeleteAsync(Guid id);
 }

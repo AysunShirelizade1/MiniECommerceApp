@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniECommerce.Application.DTOs.Order;
-using MiniECommerce.Application.DTOs.OrderProductItem;
 using MiniECommerce.Application.DTOs.OrderProduct;
-using MiniECommerceApp.Domain.Entities;
-using MiniECommerceApp.Persistence.Contexts;
-using System.Security.Claims;
+using MiniECommerce.Domain.Entities;
+using MiniECommerce.Persistence.Contexts;
 
 namespace MiniECommerce.WebApi.Controllers;
 

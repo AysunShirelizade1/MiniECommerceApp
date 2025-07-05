@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.DTOs.ReviewDto;
-using MiniECommerceApp.Domain.Entities;
+using MiniECommerce.Domain.Entities;
 
 namespace MiniECommerce.WebAPI.Controllers;
 

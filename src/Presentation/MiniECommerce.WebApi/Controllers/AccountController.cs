@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using MiniECommerceApp.Domain.Entities;
+using MiniECommerce.Domain.Entities;
 using MiniECommerce.Application.DTOs.AccountDto;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

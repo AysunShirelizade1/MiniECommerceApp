@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Product;
-using MiniECommerceApp.Application.DTOs.Product;
-using System;
-using System.Threading.Tasks;
 
 namespace MiniECommerce.WebAPI.Controllers;
 

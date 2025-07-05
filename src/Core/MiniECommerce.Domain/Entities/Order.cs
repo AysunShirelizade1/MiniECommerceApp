@@ -1,4 +1,4 @@
-﻿using MiniECommerceApp.Domain.Entities;
+﻿using MiniECommerce.Domain.Entities;
 
 public class Order : BaseEntity
 {

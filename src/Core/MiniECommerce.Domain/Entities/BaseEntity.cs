@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MiniECommerceApp.Domain.Entities;
+namespace MiniECommerce.Domain.Entities;
 
 public class BaseEntity
 {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MiniECommerceApp.Persistence.Contexts;
+using MiniECommerce.Persistence.Contexts;
 
 #nullable disable
 
@@ -156,7 +156,7 @@ namespace MiniECommerce.Persistence.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.AppUser", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.AppUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -227,7 +227,7 @@ namespace MiniECommerce.Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Category", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Category", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -264,7 +264,7 @@ namespace MiniECommerce.Persistence.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Favorite", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Favorite", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -302,7 +302,7 @@ namespace MiniECommerce.Persistence.Migrations
                     b.ToTable("Favorites");
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Image", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Image", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -342,7 +342,7 @@ namespace MiniECommerce.Persistence.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Review", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Review", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -521,7 +521,7 @@ namespace MiniECommerce.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", null)
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -530,7 +530,7 @@ namespace MiniECommerce.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", null)
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -545,7 +545,7 @@ namespace MiniECommerce.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", null)
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -554,25 +554,25 @@ namespace MiniECommerce.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", null)
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Category", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Category", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "CreatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId");
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.Category", "ParentCategory")
+                    b.HasOne("MiniECommerce.Domain.Entities.Category", "ParentCategory")
                         .WithMany("SubCategories")
                         .HasForeignKey("ParentCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "UpdatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
@@ -583,15 +583,15 @@ namespace MiniECommerce.Persistence.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Favorite", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Favorite", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "AppUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "CreatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId");
 
@@ -601,7 +601,7 @@ namespace MiniECommerce.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "UpdatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
@@ -614,9 +614,9 @@ namespace MiniECommerce.Persistence.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Image", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Image", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "CreatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId");
 
@@ -626,7 +626,7 @@ namespace MiniECommerce.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "UpdatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
@@ -637,9 +637,9 @@ namespace MiniECommerce.Persistence.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Review", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Review", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "CreatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId");
 
@@ -649,11 +649,11 @@ namespace MiniECommerce.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "UpdatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "User")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -670,17 +670,17 @@ namespace MiniECommerce.Persistence.Migrations
 
             modelBuilder.Entity("Order", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "Buyer")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "Buyer")
                         .WithMany()
                         .HasForeignKey("BuyerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "CreatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId");
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "UpdatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
@@ -693,7 +693,7 @@ namespace MiniECommerce.Persistence.Migrations
 
             modelBuilder.Entity("OrderProduct", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "CreatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId");
 
@@ -709,7 +709,7 @@ namespace MiniECommerce.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "UpdatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
@@ -724,23 +724,23 @@ namespace MiniECommerce.Persistence.Migrations
 
             modelBuilder.Entity("Product", b =>
                 {
-                    b.HasOne("MiniECommerceApp.Domain.Entities.Category", "Category")
+                    b.HasOne("MiniECommerce.Domain.Entities.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "CreatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId");
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "Owner")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MiniECommerceApp.Domain.Entities.AppUser", "UpdatedByUser")
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
@@ -753,7 +753,7 @@ namespace MiniECommerce.Persistence.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
-            modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Category", b =>
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Products");
 

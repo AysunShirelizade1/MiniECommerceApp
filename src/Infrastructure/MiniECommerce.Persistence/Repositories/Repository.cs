@@ -1,13 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MiniECommerceApp.Application.Repositories;
-using MiniECommerceApp.Domain.Entities;
-using MiniECommerceApp.Persistence.Contexts;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using MiniECommerce.Application.Abstracts.Repositories;
+using MiniECommerce.Domain.Entities;
+using MiniECommerce.Persistence.Contexts;
 
-namespace MiniECommerceApp.Persistence.Repositories;
+namespace MiniECommerce.Persistence.Repositories;
 
 public class Repository<T> : IRepository<T> where T : BaseEntity, new()
 {
@@ -25,10 +22,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity, new()
         await _dbSet.AddAsync(entity);
     }
 
-    public void Delete(T entity)
-    {
-        _dbSet.Remove(entity);
-    }
+    
 
     public IQueryable<T> GetAll(bool isTracking = false)
     {
@@ -92,7 +86,10 @@ public class Repository<T> : IRepository<T> where T : BaseEntity, new()
     {
         await _context.SaveChangesAsync();
     }
-
+    public void Delete(T entity)
+    {
+        _dbSet.Remove(entity);
+    }
     public void Update(T entity)
     {
         _dbSet.Update(entity);

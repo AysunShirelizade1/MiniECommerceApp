@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MiniECommerceApp.Persistence.Contexts;
-using MiniECommerceApp.Domain.Entities;
-using System.Text;
-using MiniECommerce.Persistence;
 using MiniECommerce.Domain.Entities;
+using MiniECommerce.Persistence;
+using MiniECommerce.Persistence.Contexts;
+using MiniECommerce.Persistence.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
