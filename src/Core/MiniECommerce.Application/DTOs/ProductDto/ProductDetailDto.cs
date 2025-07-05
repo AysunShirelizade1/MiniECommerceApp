@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace MiniECommerce.Application.DTOs.Product;
+﻿namespace MiniECommerce.Application.DTOs.Product;
 
 public class ProductDetailDto
 {

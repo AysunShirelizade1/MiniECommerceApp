@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-namespace MiniECommerce.Application.DTOs.CategoryDto;
+﻿namespace MiniECommerce.Application.DTOs.CategoryDto;
 
 public class CategoryCreateDto
 {

@@ -2,11 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniECommerce.Application.DTOs.CategoryDto;
-using MiniECommerceApp.Domain.Entities;
-using MiniECommerceApp.Persistence.Contexts;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using MiniECommerce.Domain.Entities;
+using MiniECommerce.Persistence.Contexts;
 
 namespace MiniECommerce.WebApi.Controllers;
 

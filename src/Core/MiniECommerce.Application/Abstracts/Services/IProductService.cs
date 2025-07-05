@@ -1,8 +1,4 @@
 ﻿using MiniECommerce.Application.DTOs.Product;
-using MiniECommerceApp.Application.DTOs.Product;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MiniECommerce.Application.Abstracts.Services;
 

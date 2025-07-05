@@ -1,15 +1,10 @@
-﻿using MiniECommerce.Application.Abstracts.Services;
-using MiniECommerce.Application.DTOs.Product;
-using MiniECommerceApp.Application.Repositories;
-using MiniECommerceApp.Domain.Entities;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using MiniECommerceApp.Application.DTOs.Product;
-
+using MiniECommerce.Application.Abstracts.Repositories;
+using MiniECommerce.Application.Abstracts.Services;
+using MiniECommerce.Application.DTOs.Product;
+using MiniECommerce.Domain.Entities;
+namespace MiniECommerce.Persistence.Services;
 public class ProductService : IProductService
 {
     private readonly IRepository<Product> _productRepository;

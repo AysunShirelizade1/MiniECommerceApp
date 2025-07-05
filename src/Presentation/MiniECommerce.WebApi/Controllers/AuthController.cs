@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.DTOs.AppUserDto;
-using MiniECommerce.Domain.Entities; // Burada AppUser və AppRole üçün
-using MiniECommerceApp.Domain.Entities;
-using System.Security.Claims;
+using MiniECommerce.Domain.Entities;
+using MiniECommerce.Persistence.Services;
+namespace MiniECommerce.WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

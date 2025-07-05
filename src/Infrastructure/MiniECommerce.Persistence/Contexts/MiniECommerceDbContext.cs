@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MiniECommerce.Domain.Entities;
-using MiniECommerceApp.Domain.Entities;
+using MiniECommerce.Persistence.Contexts;
 
-namespace MiniECommerceApp.Persistence.Contexts;
+namespace MiniECommerce.Persistence.Contexts;
 
 public class MiniECommerceDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 {

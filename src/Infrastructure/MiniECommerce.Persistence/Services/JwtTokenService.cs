@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using MiniECommerceApp.Domain.Entities;
+using MiniECommerce.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-
+namespace MiniECommerce.Persistence.Services;
 public class JwtTokenService
 {
     private readonly IConfiguration _configuration;

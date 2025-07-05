@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.DTOs.AppUserDto;
-using MiniECommerceApp.Domain.Entities;
+using MiniECommerce.Domain.Entities;
 namespace MiniECommerce.WebApi.Controllers;
 [Route("api/[controller]")]
 [ApiController]

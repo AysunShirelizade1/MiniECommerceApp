@@ -1,8 +1,6 @@
-﻿using System.Linq.Expressions;
-using MiniECommerceApp.Domain.Entities;
-
-namespace MiniECommerceApp.Application.Repositories;
-
+﻿using MiniECommerce.Domain.Entities;
+using System.Linq.Expressions;
+namespace MiniECommerce.Application.Abstracts.Repositories;
 public interface IRepository<T> where T : BaseEntity, new()
 {
     Task<T?> GetByIdAsync(Guid id);

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MiniECommerceApp.Domain.Entities;
+using MiniECommerce.Domain.Entities;
 
 
-namespace MiniECommerceApp.Persistence.Configuration;
+namespace MiniECommerce.Persistence.Configuration;
 
 public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
 {

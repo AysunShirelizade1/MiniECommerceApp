@@ -1,71 +1,76 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Image;
-using MiniECommerceApp.Domain.Entities;
 
-namespace MiniECommerce.WebAPI.Controllers;
+namespace MiniECommerce.WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class ImageController : ControllerBase
 {
-    // GET: api/image
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        var images = new List<ImageDto>
-        {
-            new ImageDto
-            {
-                Id = Guid.NewGuid(),
-                ImageUrl = "https://example.com/image1.jpg",
-                IsMain = true
-            },
-            new ImageDto
-            {
-                Id = Guid.NewGuid(),
-                ImageUrl = "https://example.com/image2.jpg",
-                IsMain = false
-            }
-        };
+    private readonly IImageService _imageService;
 
+    public ImageController(IImageService imageService)
+    {
+        _imageService = imageService;
+    }
+
+    // GET api/image/product/{productId}
+    [HttpGet("product/{productId}")]
+    public async Task<IActionResult> GetAllByProductId(Guid productId)
+    {
+        var images = await _imageService.GetAllByProductIdAsync(productId);
         return Ok(images);
     }
 
-    // GET: api/image/{id}
+    // GET api/image/{id}
     [HttpGet("{id}")]
-    public IActionResult GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var image = new ImageDto
-        {
-            Id = id,
-            ImageUrl = "https://example.com/image.jpg",
-            IsMain = false
-        };
-
+        var image = await _imageService.GetByIdAsync(id);
+        if (image == null) return NotFound();
         return Ok(image);
     }
 
-    // POST: api/image
+    // POST api/image
     [HttpPost]
-    public IActionResult Create([FromBody] CreateImageDto dto)
+    [Authorize]  // İstifadəçi login olmalıdır
+    public async Task<IActionResult> Create([FromBody] CreateImageDto dto)
     {
-        var newId = Guid.NewGuid();
-        return CreatedAtAction(nameof(GetById), new { id = newId }, null);
+        await _imageService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = dto.ProductId }, null);
     }
 
-    // PUT: api/image
-    [HttpPut]
-    public IActionResult Update([FromBody] UpdateImageDto dto)
+    // PUT api/image/{id}
+    [HttpPut("{id}")]
+    [Authorize]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateImageDto dto)
     {
-        // Normalda burada DB-də update ediləcək
-        return NoContent();
+        try
+        {
+            await _imageService.UpdateAsync(id, dto);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
-    // DELETE: api/image/{id}
+    // DELETE api/image/{id}
     [HttpDelete("{id}")]
-    public IActionResult Delete(Guid id)
+    [Authorize]
+    public async Task<IActionResult> Delete(Guid id)
     {
-        // Normalda burada DB-dən silinəcək
-        return NoContent();
+        try
+        {
+            await _imageService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 }

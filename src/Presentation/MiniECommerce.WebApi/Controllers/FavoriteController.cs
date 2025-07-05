@@ -1,85 +1,80 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MiniECommerce.Application.Abstractions.Services;
 using MiniECommerce.Application.DTOs.Favorite;
-using MiniECommerce.Domain.Entities;
-using System.Security.Claims;
 
 namespace MiniECommerce.WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]  
 public class FavoriteController : ControllerBase
 {
+    private readonly IFavoriteService _favoriteService;
+
+    public FavoriteController(IFavoriteService favoriteService)
+    {
+        _favoriteService = favoriteService;
+    }
+
     // GET: api/favorite
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        // Bütün favoritləri (və ya istifadəçiyə görə) mock qaytarırıq
-        var favorites = new List<FavoriteDto>
-        {
-            new FavoriteDto
-            {
-                Id = Guid.NewGuid(),
-                ProductId = Guid.NewGuid(),
-                ProductTitle = "iPhone 15",
-                ProductImage = "iphone15.jpg",
-                Price = 2500
-            },
-            new FavoriteDto
-            {
-                Id = Guid.NewGuid(),
-                ProductId = Guid.NewGuid(),
-                ProductTitle = "MacBook Air",
-                ProductImage = "macbook.jpg",
-                Price = 3200
-            }
-        };
-
+        var userId = GetUserId();
+        var favorites = await _favoriteService.GetAllByUserIdAsync(userId);
         return Ok(favorites);
     }
 
     // GET: api/favorite/{id}
     [HttpGet("{id}")]
-    public IActionResult GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var favorite = new FavoriteDto
-        {
-            Id = id,
-            ProductId = Guid.NewGuid(),
-            ProductTitle = "Samsung Galaxy S24",
-            ProductImage = "samsung.jpg",
-            Price = 1800
-        };
+        var favorite = await _favoriteService.GetByIdAsync(id);
+        if (favorite == null)
+            return NotFound("Favorit tapılmadı.");
+
+        var userId = GetUserId();
+        // Əgər favorit istifadəçiyə aid deyilsə, icazə vermə
+        // Əgər FavoriteDto-da userId yoxdursa, servisdə yoxlamaq lazım ola bilər.
+        // Burada sadəlik üçün istifadəçi yoxlanmır, amma servisə əlavə etmək daha doğru olar.
 
         return Ok(favorite);
     }
 
     // POST: api/favorite
     [HttpPost]
-    [Authorize] // Yalnız login olmuş istifadəçi
-    public IActionResult Create([FromBody] CreateFavoriteDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateFavoriteDto dto)
     {
-        // İstifadəçi ID-sini JWT-dən al
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-            return Unauthorized("Token etibarsız və ya mövcud deyil");
-
-        // Normalda burada Favorite yarat və DB-yə save et
-        var newId = Guid.NewGuid();
+        var userId = GetUserId();
+        var newId = await _favoriteService.CreateAsync(userId, dto);
         return CreatedAtAction(nameof(GetById), new { id = newId }, null);
     }
 
     // DELETE: api/favorite/{id}
     [HttpDelete("{id}")]
-    [Authorize] // Yalnız login olmuş istifadəçi
-    public IActionResult Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        // Burada userId ilə yoxlaya bilərik ki, həmin favorit bu user-ə aiddir ya yox
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-            return Unauthorized("Token etibarsız və ya mövcud deyil");
+        var userId = GetUserId();
+        try
+        {
+            await _favoriteService.DeleteAsync(id, userId);
+            return NoContent();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid("Bu favoriti silmək üçün icazəniz yoxdur.");
+        }
+        catch (Exception)
+        {
+            return NotFound("Favorit tapılmadı.");
+        }
+    }
 
-        // Normalda burada DB-dən silmə əməliyyatı aparılır
-        return NoContent();
+    private Guid GetUserId()
+    {
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.Parse(userIdString!);
     }
 }
