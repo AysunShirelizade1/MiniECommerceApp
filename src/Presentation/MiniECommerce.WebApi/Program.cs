@@ -2,25 +2,24 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MiniECommerceApp.Persistence.Contexts;
 using MiniECommerceApp.Domain.Entities;
 using System.Text;
-using FluentValidation.AspNetCore;
-using MiniECommerce.Domain.Entities;
 using MiniECommerce.Persistence;
-using System;
+using MiniECommerce.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.RegisterService();
 
 
 builder.Services.AddDbContext<MiniECommerceDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
-    // Password settings, lockout və s. burda tənzimlənə bilər
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 6;
     options.Password.RequireNonAlphanumeric = false;
@@ -29,8 +28,8 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
 })
     .AddEntityFrameworkStores<MiniECommerceDbContext>()
     .AddDefaultTokenProviders();
-builder.Services.AddScoped<JwtTokenService>();
 
+builder.Services.AddScoped<JwtTokenService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -56,10 +55,36 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-// Token service (sənin JWT token yaratma sinifin)
-builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mini E-Commerce API", Version = "v1" });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header istifadə olunur. Format: Bearer {token}"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var app = builder.Build();
 

@@ -1,66 +1,38 @@
-﻿using System.Linq.Expressions;
-using MiniECommerceApp.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 using MiniECommerceApp.Application.Repositories;
+using MiniECommerceApp.Domain.Entities;
 using MiniECommerceApp.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace MiniECommerceApp.Persistence.Repositories;
 
 public class Repository<T> : IRepository<T> where T : BaseEntity, new()
 {
     private readonly MiniECommerceDbContext _context;
-    private readonly DbSet<T> _table;
+    private readonly DbSet<T> _dbSet;
 
     public Repository(MiniECommerceDbContext context)
     {
         _context = context;
-        _table = _context.Set<T>();
+        _dbSet = _context.Set<T>();
     }
 
     public async Task AddAsync(T entity)
     {
-        entity.CreatedAt = DateTime.UtcNow;
-        await _table.AddAsync(entity);
-    }
-
-    public void Update(T entity)
-    {
-        entity.UpdatedAt = DateTime.UtcNow;
-        _table.Update(entity);
+        await _dbSet.AddAsync(entity);
     }
 
     public void Delete(T entity)
     {
-        _table.Remove(entity);
-    }
-
-    public async Task<T?> GetByIdAsync(Guid id)
-    {
-        return await _table.FindAsync(id);
-    }
-
-    public IQueryable<T> GetByFiltered(
-        Expression<Func<T, bool>>? predicate = null,
-        Expression<Func<T, object>>[]? include = null,
-        bool isTracking = false)
-    {
-        IQueryable<T> query = _table;
-
-        if (predicate != null)
-            query = query.Where(predicate);
-
-        if (include != null)
-        {
-            foreach (var inc in include)
-                query = query.Include(inc);
-        }
-
-        return isTracking ? query : query.AsNoTracking();
+        _dbSet.Remove(entity);
     }
 
     public IQueryable<T> GetAll(bool isTracking = false)
     {
-        return isTracking ? _table : _table.AsNoTracking();
+        return isTracking ? _dbSet : _dbSet.AsNoTracking();
     }
 
     public IQueryable<T> GetAllFiltered(
@@ -70,38 +42,59 @@ public class Repository<T> : IRepository<T> where T : BaseEntity, new()
         bool isOrderByAsc = true,
         bool isTracking = false)
     {
-        IQueryable<T> query = _table;
+        IQueryable<T> query = isTracking ? _dbSet : _dbSet.AsNoTracking();
 
         if (predicate != null)
             query = query.Where(predicate);
 
         if (include != null)
         {
-            foreach (var inc in include)
-                query = query.Include(inc);
+            foreach (var includeProperty in include)
+                query = query.Include(includeProperty);
         }
 
-        if (orderBy != null && orderBy.Length > 0)
+        if (orderBy != null)
         {
-            IOrderedQueryable<T> orderedQuery = isOrderByAsc
-                ? query.OrderBy(orderBy[0])
-                : query.OrderByDescending(orderBy[0]);
-
-            for (int i = 1; i < orderBy.Length; i++)
+            foreach (var orderByProperty in orderBy)
             {
-                orderedQuery = isOrderByAsc
-                    ? orderedQuery.ThenBy(orderBy[i])
-                    : orderedQuery.ThenByDescending(orderBy[i]);
+                query = isOrderByAsc ? query.OrderBy(orderByProperty) : query.OrderByDescending(orderByProperty);
             }
-
-            query = orderedQuery;
         }
 
-        return isTracking ? query : query.AsNoTracking();
+        return query;
+    }
+
+    public IQueryable<T> GetByFiltered(
+        Expression<Func<T, bool>>? predicate = null,
+        Expression<Func<T, object>>[]? include = null,
+        bool isTracking = false)
+    {
+        IQueryable<T> query = isTracking ? _dbSet : _dbSet.AsNoTracking();
+
+        if (predicate != null)
+            query = query.Where(predicate);
+
+        if (include != null)
+        {
+            foreach (var includeProperty in include)
+                query = query.Include(includeProperty);
+        }
+
+        return query;
+    }
+
+    public async Task<T?> GetByIdAsync(Guid id)
+    {
+        return await _dbSet.FindAsync(id);
     }
 
     public async Task SaveChangeAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public void Update(T entity)
+    {
+        _dbSet.Update(entity);
     }
 }

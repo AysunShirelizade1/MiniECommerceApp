@@ -14,7 +14,7 @@ public class UserDto
     public string Email { get; set; } = null!;
     public string Role { get; set; } = null!;
 
-    public UserDto(AppUser user)
+    public UserDto(AppUser user, string role)
     {
         Id = user.Id;
         FullName = user.FullName;

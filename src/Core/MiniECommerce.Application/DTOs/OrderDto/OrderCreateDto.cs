@@ -4,5 +4,5 @@ namespace MiniECommerce.Application.DTOs.Order;
 
 public class OrderCreateDto
 {
-    public List<OrderProductItemDto> Products { get; set; } = new();
+    public List<OrderProductItemDto> Products { get; set; }
 }

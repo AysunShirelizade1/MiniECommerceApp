@@ -19,33 +19,44 @@ public class JwtTokenService
 
     public async Task<string> GenerateToken(AppUser user)
     {
-        var rolesFromDb = await _userManager.GetRolesAsync(user); // ad fərqlidir
-
-        var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Name, user.UserName),
-        new Claim(ClaimTypes.Email, user.Email)
-    };
-
-        foreach (var role in rolesFromDb)
+        try
         {
-            claims.Add(new Claim(ClaimTypes.Role, role));
+            var rolesFromDb = await _userManager.GetRolesAsync(user);
+
+            var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName ?? ""),
+            new Claim(ClaimTypes.Email, user.Email ?? "")
+        };
+
+            foreach (var role in rolesFromDb)
+                claims.Add(new Claim(ClaimTypes.Role, role));
+
+            var jwtKey = _configuration["Jwt:Key"];
+            if (string.IsNullOrEmpty(jwtKey))
+                throw new Exception("JWT Key boşdur.");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(2),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        catch (Exception ex)
+        {
+            Console.WriteLine("Token yaratma xətası: " + ex.Message);
+            throw; // xəta mesajını göstərmək üçün atırıq
+        }
     }
+
 
 }
 
