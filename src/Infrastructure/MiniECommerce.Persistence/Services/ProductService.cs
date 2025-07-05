@@ -1,141 +1,129 @@
-﻿using System;
+﻿using MiniECommerce.Application.Abstracts.Services;
+using MiniECommerce.Application.DTOs.Product;
+using MiniECommerceApp.Application.Repositories;
+using MiniECommerceApp.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using MiniECommerce.Application.DTOs.Product;
-using MiniECommerce.Application.Services;
-using MiniECommerceApp.Application.Abstract;
 using MiniECommerceApp.Application.DTOs.Product;
-using MiniECommerceApp.Domain.Entities;
 
-namespace MiniECommerceApp.Persistence.Services
+public class ProductService : IProductService
 {
-    public class ProductService : IProductService
+    private readonly IRepository<Product> _productRepository;
+    private readonly IRepository<Category> _categoryRepository;
+    private readonly IRepository<Image> _imageRepository;
+
+    public ProductService(
+        IRepository<Product> productRepository,
+        IRepository<Category> categoryRepository,
+        IRepository<Image> imageRepository)
     {
-        private readonly IProductRepository _productRepository;
+        _productRepository = productRepository;
+        _categoryRepository = categoryRepository;
+        _imageRepository = imageRepository;
+    }
 
-        public ProductService(IProductRepository productRepository)
+    public async Task CreateAsync(ProductCreateDto dto)
+    {
+        var product = new Product
         {
-            _productRepository = productRepository;
-        }
+            Title = dto.Title,
+            Description = dto.Description,
+            Price = dto.Price,
+            CategoryId = dto.CategoryId,
+        };
 
-        public async Task<List<ProductListDto>> GetAllFilteredAsync(Guid? categoryId = null, decimal? minPrice = null, decimal? maxPrice = null, string? search = null)
+        await _productRepository.AddAsync(product);
+        await _productRepository.SaveChangeAsync();
+
+        if (dto.ImageUrl != null && dto.ImageUrl.Any())
         {
-            Expression<Func<Product, bool>> predicate = p =>
-                (!categoryId.HasValue || p.CategoryId == categoryId) &&
-                (!minPrice.HasValue || p.Price >= minPrice) &&
-                (!maxPrice.HasValue || p.Price <= maxPrice) &&
-                (string.IsNullOrEmpty(search) || p.Title.Contains(search, StringComparison.OrdinalIgnoreCase));
-
-            var productsQuery = _productRepository.GetAllFiltered(
-                predicate: predicate,
-                include: new Expression<Func<Product, object>>[] { p => p.Category, p => p.Images }
-            );
-
-            var products = await productsQuery.ToListAsync();
-
-            var productListDtos = products.Select(p => new ProductListDto
+            foreach (var url in dto.ImageUrl)
             {
-                Id = p.Id,
-                Name = p.Title,
-                Description = p.Description ?? string.Empty,
-                Price = p.Price,
-                CategoryName = p.Category?.Name ?? string.Empty,
-                ImageUrl = p.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>()
-            }).ToList();
-
-            return productListDtos;
+                var image = new Image
+                {
+                    ProductId = product.Id,
+                    ImageUrl = url,
+                    IsMain = false
+                };
+                await _imageRepository.AddAsync(image);
+            }
+            await _imageRepository.SaveChangeAsync();
         }
-
-        public async Task<ProductDetailDto?> GetByIdAsync(Guid id)
+    }
+    public async Task DeleteAsync(Guid id)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+        if (product != null)
         {
-            var product = await _productRepository.GetByIdWithIncludesAsync(id, new Expression<Func<Product, object>>[] { p => p.Category, p => p.Images });
-            if (product == null) return null;
-
-            return new ProductDetailDto
-            {
-                Id = product.Id,
-                Title = product.Title,
-                Description = product.Description,
-                Price = product.Price,
-                CategoryId = product.CategoryId,
-                CategoryName = product.Category?.Name,
-                ImageUrls = product.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>(),
-                OwnerId = product.OwnerId
-            };
-        }
-
-        public async Task<Guid> CreateAsync(ProductCreateDto dto, Guid ownerId)
-        {
-            var product = new Product
-            {
-                Id = Guid.NewGuid(),
-                Title = dto.Name,
-                Description = dto.Description,
-                Price = dto.Price,
-                CategoryId = dto.CategoryId,
-                OwnerId = ownerId,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _productRepository.AddAsync(product);
-            await _productRepository.SaveChangeAsync();
-
-            return product.Id;
-        }
-
-
-        public async Task<bool> UpdateAsync(Guid id, ProductUpdateDto dto, Guid ownerId)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null || product.OwnerId != ownerId)
-                return false;
-
-            if (dto.Name != null) product.Title = dto.Name;
-            if (dto.Description != null) product.Description = dto.Description;
-            if (dto.Price.HasValue) product.Price = dto.Price.Value;
-            if (dto.CategoryId.HasValue) product.CategoryId = dto.CategoryId.Value;
-
-            product.UpdatedAt = DateTime.UtcNow;
-
-            _productRepository.Update(product);
-            await _productRepository.SaveChangeAsync();
-            return true;
-        }
-
-        public async Task<bool> DeleteAsync(Guid id, Guid ownerId)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null || product.OwnerId != ownerId)
-                return false;
-
             _productRepository.Delete(product);
             await _productRepository.SaveChangeAsync();
-            return true;
         }
+    }
 
-        public async Task<List<ProductListDto>> GetProductsByOwnerAsync(Guid ownerId)
+    public async Task<IEnumerable<ProductListDto>> GetAllAsync()
+    {
+        var products = _productRepository.GetAllFiltered(
+            include: new Expression<Func<Product, object>>[] { p => p.Category, p => p.Images },
+            isTracking: false);
+
+        var list = await products.Select(p => new ProductListDto
         {
-            var productsQuery = _productRepository.GetAllFiltered(
-                predicate: p => p.OwnerId == ownerId,
-                include: new Expression<Func<Product, object>>[] { p => p.Category, p => p.Images }
-            );
+            Id = p.Id,
+            Title = p.Title,
+            Description = p.Description,
+            Price = p.Price,
+            CategoryName = p.Category.Name,
+            ImageUrl = p.Images.Select(i => i.ImageUrl).ToList()
+        }).ToListAsync();
 
-            var products = await productsQuery.ToListAsync();
+        return list;
+    }
 
-            var productListDtos = products.Select(p => new ProductListDto
-            {
-                Id = p.Id,
-                Name = p.Title,
-                Description = p.Description ?? string.Empty,
-                Price = p.Price,
-                CategoryName = p.Category?.Name ?? string.Empty,
-                ImageUrl = p.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>()
-            }).ToList();
+    public async Task<ProductDetailDto?> GetByIdAsync(Guid id)
+    {
+        var productQuery = _productRepository.GetByFiltered(
+            predicate: p => p.Id == id,
+            include: new Expression<Func<Product, object>>[] { p => p.Category, p => p.Images, p => p.Owner },
+            isTracking: false);
 
-            return productListDtos;
-        }
+        var product = await productQuery.FirstOrDefaultAsync();
+        if (product == null) return null;
+
+        return new ProductDetailDto
+        {
+            Id = product.Id,
+            Title = product.Title,
+            Description = product.Description,
+            Price = product.Price,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category.Name,
+            ImageUrls = product.Images.Select(i => i.ImageUrl).ToList(),
+            OwnerId = product.OwnerId
+        };
+    }
+
+    public async Task UpdateAsync(Guid id, ProductUpdateDto dto)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+        if (product == null) return;
+
+        if (!string.IsNullOrEmpty(dto.Title))
+            product.Title = dto.Title;
+
+        if (!string.IsNullOrEmpty(dto.Description))
+            product.Description = dto.Description;
+
+        if (dto.Price.HasValue)
+            product.Price = dto.Price.Value;
+
+        if (dto.CategoryId.HasValue)
+            product.CategoryId = dto.CategoryId.Value;
+
+        _productRepository.Update(product);
+        await _productRepository.SaveChangeAsync();
     }
 }

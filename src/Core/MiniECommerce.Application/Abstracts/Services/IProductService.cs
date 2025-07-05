@@ -1,15 +1,16 @@
 ﻿using MiniECommerce.Application.DTOs.Product;
 using MiniECommerceApp.Application.DTOs.Product;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace MiniECommerce.Application.Services
+namespace MiniECommerce.Application.Abstracts.Services;
+
+public interface IProductService
 {
-    public interface IProductService
-    {
-        Task<List<ProductListDto>> GetAllFilteredAsync(Guid? categoryId, decimal? minPrice, decimal? maxPrice, string? search);
-        Task<ProductDetailDto?> GetByIdAsync(Guid id);
-        Task<Guid> CreateAsync(ProductCreateDto dto, Guid ownerId); // ← düzəliş buradadır
-        Task<bool> UpdateAsync(Guid id, ProductUpdateDto dto, Guid ownerId);
-        Task<bool> DeleteAsync(Guid id, Guid ownerId);
-        Task<List<ProductListDto>> GetProductsByOwnerAsync(Guid ownerId);
-    }
+    Task<IEnumerable<ProductListDto>> GetAllAsync();
+    Task<ProductDetailDto?> GetByIdAsync(Guid id);
+    Task CreateAsync(ProductCreateDto dto);
+    Task UpdateAsync(Guid id, ProductUpdateDto dto);
+    Task DeleteAsync(Guid id);
 }

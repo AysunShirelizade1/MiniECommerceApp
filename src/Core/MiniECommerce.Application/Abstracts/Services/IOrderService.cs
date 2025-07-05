@@ -1,28 +1,15 @@
-﻿using MiniECommerce.Application.Common;
-using MiniECommerce.Application.DTOs.Order;
-using MiniECommerce.Application.Services.Repositories;
+﻿using MiniECommerce.Application.DTOs.Order;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace MiniECommerce.Application.Services;
+namespace MiniECommerce.Application.Abstracts.Services;
 
-public class IOrderService : IOrderRepository
+public interface IOrderService
 {
-    public Task<ServiceResult<OrderDto>> CreateOrderAsync(OrderCreateDto dto, Guid buyerId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<ServiceResult<OrderDto>> GetOrderByIdAsync(Guid orderId, Guid userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<OrderDto>> GetOrdersByBuyerIdAsync(Guid buyerId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<OrderDto>> GetSalesBySellerIdAsync(Guid sellerId)
-    {
-        throw new NotImplementedException();
-    }
+    Task<IEnumerable<OrderListDto>> GetAllAsync();
+    Task<OrderDetailDto?> GetByIdAsync(Guid id);
+    Task CreateAsync(OrderCreateDto dto);
+    Task UpdateAsync(OrderUpdateDto dto);
+    Task DeleteAsync(Guid id);
 }

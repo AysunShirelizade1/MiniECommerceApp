@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MiniECommerceApp.Application.Abstract;
+using MiniECommerce.Application.Abstracts.Services;
+using MiniECommerceApp.Application.Repositories;
 using MiniECommerceApp.Persistence.Repositories;
-using MiniECommerceApp.Persistence.Services;
-using MiniECommerce.Application.Services;
 
 namespace MiniECommerce.Persistence;
 
@@ -11,15 +10,13 @@ public static class ServiceRegistration
     public static void RegisterService(this IServiceCollection services)
     {
         #region Repositories
-        services.AddScoped<IProductRepository, ProductRepository>();
-        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         #endregion
         #region Servicies
 
-        services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IProductService, ProductService>();
-        services.AddScoped<IAuthService, AuthService>();
+
 
 
         #endregion
