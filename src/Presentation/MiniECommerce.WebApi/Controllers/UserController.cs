@@ -15,7 +15,7 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    [HttpPost("register")]
+    [HttpPost("Register")]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
@@ -23,7 +23,7 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPost("login")]
+    [HttpPost("Login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
@@ -33,7 +33,7 @@ public class UserController : ControllerBase
 
     // Burada "admin" kiçik hərflə yazıldı (token-da da kiçik gəlir)
     [HttpGet]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll()
     {
         var users = await _userService.GetAllUsersAsync();

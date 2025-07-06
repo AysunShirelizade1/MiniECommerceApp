@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Product;
 
@@ -36,11 +37,20 @@ public class ProductController : ControllerBase
 
     // POST: api/product
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] ProductCreateDto dto)
     {
-        await _productService.CreateAsync(dto);
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+            return Unauthorized();
+
+        var userId = Guid.Parse(userIdClaim.Value);
+        await _productService.CreateAsync(dto, userId);
+
         return CreatedAtAction(nameof(GetById), new { id = dto.CategoryId }, dto);
     }
+
+
 
     // PUT: api/product
     [HttpPut]

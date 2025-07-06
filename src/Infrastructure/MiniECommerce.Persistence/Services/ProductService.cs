@@ -21,7 +21,7 @@ public class ProductService : IProductService
         _imageRepository = imageRepository;
     }
 
-    public async Task CreateAsync(ProductCreateDto dto)
+    public async Task<ProductCreateDto> CreateAsync(ProductCreateDto dto, Guid userId)
     {
         var product = new Product
         {
@@ -29,6 +29,7 @@ public class ProductService : IProductService
             Description = dto.Description,
             Price = dto.Price,
             CategoryId = dto.CategoryId,
+            OwnerId = userId
         };
 
         await _productRepository.AddAsync(product);
@@ -48,7 +49,11 @@ public class ProductService : IProductService
             }
             await _imageRepository.SaveChangeAsync();
         }
+
+        return dto;
     }
+
+
     public async Task DeleteAsync(Guid id)
     {
         var product = await _productRepository.GetByIdAsync(id);
