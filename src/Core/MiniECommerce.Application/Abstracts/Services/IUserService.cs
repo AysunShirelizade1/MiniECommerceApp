@@ -8,4 +8,8 @@ public interface IUserService
     Task<UserDto> RegisterAsync(RegisterDto registerDto);
     Task<List<UserDto>> GetAllUsersAsync();
     Task<UserDto> GetUserByIdAsync(Guid id);
+    
+    Task<string?> GetEmailByIdAsync(Guid userId);
+    
+
 }

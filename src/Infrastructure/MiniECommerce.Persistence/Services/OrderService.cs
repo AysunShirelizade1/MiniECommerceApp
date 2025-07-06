@@ -1,5 +1,6 @@
 ﻿using MiniECommerce.Application.Abstracts.Repositories;
 using MiniECommerce.Application.Abstracts.Services;
+using MiniECommerce.Application.DTOs.Email;
 using MiniECommerce.Application.DTOs.Order;
 using MiniECommerce.Application.DTOs.OrderProduct;
 
@@ -9,12 +10,21 @@ public class OrderService : IOrderService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IEmailService _emailService;
+    private readonly IUserService _userService;
 
-    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository)
+    public OrderService(
+        IOrderRepository orderRepository,
+        IProductRepository productRepository,
+        IEmailService emailService,
+        IUserService userService) 
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
+        _emailService = emailService;
+        _userService = userService;
     }
+
 
     public async Task<List<OrderListDto>> GetAllAsync()
     {
@@ -81,8 +91,24 @@ public class OrderService : IOrderService
         await _orderRepository.AddAsync(order);
         await _orderRepository.SaveChangeAsync();
 
+        // İstifadəçinin emailini alırıq
+        var buyerEmail = await _userService.GetEmailByIdAsync(buyerId);
+        if (!string.IsNullOrEmpty(buyerEmail))
+        {
+            await _emailService.SendAsync(new EmailDto
+            {
+                To = "sunahacker01@gmail.com",
+                Subject = "Sifariş təsdiqi",
+                Body = $"Sifarişiniz (ID: {order.Id}) qəbul edildi. Ümumi məhsul sayı: {order.OrderProducts.Count}."
+            });
+
+        }
+
         return order.Id;
     }
+
+
+
 
     public async Task UpdateStatusAsync(OrderUpdateDto dto)
     {

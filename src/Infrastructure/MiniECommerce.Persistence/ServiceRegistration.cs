@@ -3,11 +3,14 @@ using MiniECommerce.Application.Abstracts.Repositories;
 using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Persistence.Repositories;
 using MiniECommerce.Persistence.Services;
+using MiniECommerce.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+
 namespace MiniECommerce.Persistence;
 
 public static class ServiceRegistration
 {
-    public static void RegisterService(this IServiceCollection services)
+    public static void RegisterService(this IServiceCollection services, IConfiguration configuration)
     {
         #region Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -16,11 +19,12 @@ public static class ServiceRegistration
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IFavoriteRepository, FavoriteRepository>();
         services.AddScoped<IImageRepository, ImageRepository>();
-
-
         #endregion
 
-        #region Servicies
+        #region Services
+        services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+        services.AddTransient<IEmailService, EmailService>();
+
 
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICategoryService, CategoryService>();
@@ -29,7 +33,6 @@ public static class ServiceRegistration
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IImageService, ImageService>();
         #endregion
-
-
     }
+
 }

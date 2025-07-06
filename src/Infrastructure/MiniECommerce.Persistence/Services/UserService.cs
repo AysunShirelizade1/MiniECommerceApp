@@ -88,6 +88,11 @@ public class UserService : IUserService
 
         return new UserDto(user, role);
     }
+    public async Task<string?> GetEmailByIdAsync(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        return user?.Email;
+    }
 
     private string GenerateJwtToken(AppUser user, IList<string> roles)
     {

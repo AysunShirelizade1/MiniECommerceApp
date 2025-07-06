@@ -34,6 +34,9 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+        // ✅ Rolu formatla (məs: "admin" → "Admin")
+        dto.Role = char.ToUpper(dto.Role[0]) + dto.Role.Substring(1).ToLower();
+
         var existingUser = await _userManager.FindByEmailAsync(dto.Email);
         if (existingUser != null)
             return BadRequest("User already exists.");

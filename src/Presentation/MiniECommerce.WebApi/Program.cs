@@ -13,8 +13,7 @@ using MiniECommerce.Persistence.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.RegisterService();
-
+builder.Services.RegisterService(builder.Configuration);
 
 builder.Services.AddDbContext<MiniECommerceDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
