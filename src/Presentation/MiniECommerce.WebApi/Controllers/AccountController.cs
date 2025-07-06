@@ -49,8 +49,24 @@ public class AccountController : ControllerBase
         if (user == null)
             return NotFound();
 
-        user.UserName = dto.UserName;
-        user.Email = dto.Email;
+        // Email yoxlaması
+        if (user.Email != dto.Email)
+        {
+            var existingUserByEmail = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUserByEmail != null && existingUserByEmail.Id != user.Id)
+                return BadRequest("Bu email artıq başqa istifadəçi tərəfindən istifadə olunur.");
+            user.Email = dto.Email;
+            user.EmailConfirmed = false; // Email təsdiqi sistemi varsa
+        }
+
+        // UserName yoxlaması
+        if (user.UserName != dto.UserName)
+        {
+            var existingUserByName = await _userManager.FindByNameAsync(dto.UserName);
+            if (existingUserByName != null && existingUserByName.Id != user.Id)
+                return BadRequest("Bu istifadəçi adı artıq mövcuddur.");
+            user.UserName = dto.UserName;
+        }
 
         var result = await _userManager.UpdateAsync(user);
 
@@ -59,6 +75,7 @@ public class AccountController : ControllerBase
 
         return Ok("Profil yeniləndi.");
     }
+
 
     // PUT: /api/account/change-password
     [HttpPut("change-password")]

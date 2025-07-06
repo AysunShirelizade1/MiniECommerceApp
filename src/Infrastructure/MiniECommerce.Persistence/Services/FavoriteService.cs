@@ -1,6 +1,6 @@
-﻿using MiniECommerce.Application.Abstractions.Services;
+﻿using MiniECommerce.Application.Abstracts.Repositories;
+using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Favorite;
-using MiniECommerce.Application.Abstracts.Repositories;
 using MiniECommerce.Domain.Entities;
 
 

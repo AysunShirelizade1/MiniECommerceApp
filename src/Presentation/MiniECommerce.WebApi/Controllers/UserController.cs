@@ -1,83 +1,50 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.AppUserDto;
-using MiniECommerce.Domain.Entities;
-namespace MiniECommerce.WebApi.Controllers;
+
+namespace MiniECommerce.WebAPI.Controllers;
+
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Admin,Moderator")] // Məsələn, yalnız Admin və Moderatorlara açıqdır
 public class UserController : ControllerBase
 {
-    private readonly UserManager<AppUser> _userManager;
-
-    public UserController(UserManager<AppUser> userManager)
+    private readonly IUserService _userService;
+    public UserController(IUserService userService)
     {
-        _userManager = userManager;
+        _userService = userService;
     }
 
-    // GET: api/User
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+    {
+        var user = await _userService.RegisterAsync(dto);
+        return Ok(user);
+    }
+
+    [HttpPost("login")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    {
+        var token = await _userService.LoginAsync(dto);
+        return Ok(token);
+    }
+
+    // Burada "admin" kiçik hərflə yazıldı (token-da da kiçik gəlir)
     [HttpGet]
-    public async Task<IActionResult> GetAllUsers()
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> GetAll()
     {
-        var users = _userManager.Users.ToList();
-        var userDtos = new List<UserDto>();
-
-        foreach (var user in users)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            var role = roles.FirstOrDefault() ?? "No Role";
-
-            userDtos.Add(new UserDto(user, role));
-        }
-
-        return Ok(userDtos);
+        var users = await _userService.GetAllUsersAsync();
+        return Ok(users);
     }
 
-    // GET: api/User/{id}
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserById(string id)
+    [Authorize]
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user == null)
-            return NotFound("İstifadəçi tapılmadı.");
-
-        var roles = await _userManager.GetRolesAsync(user);
-        var role = roles.FirstOrDefault() ?? "No Role";
-
-        var userDto = new UserDto(user, role);
-        return Ok(userDto);
-    }
-
-    // POST: api/User
-    // Yeni istifadəçi əlavə etmək üçün (Admin və ya Moderator ola bilər)
-    [HttpPost]
-    public async Task<IActionResult> CreateUser(RegisterDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var existingUser = await _userManager.FindByEmailAsync(dto.Email);
-        if (existingUser != null)
-            return BadRequest("Bu istifadəçi artıq mövcuddur.");
-
-        var user = new AppUser
-        {
-            UserName = dto.Email,
-            Email = dto.Email,
-            FullName = dto.FullName
-        };
-
-        var result = await _userManager.CreateAsync(user, dto.Password);
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
-        // Rol yaradılmayıbsa yaradılır və istifadəçiyə əlavə edilir
-        if (!await _userManager.IsInRoleAsync(user, dto.Role))
-        {
-            await _userManager.AddToRoleAsync(user, dto.Role);
-        }
-
-        return Ok("İstifadəçi uğurla yaradıldı.");
+        var user = await _userService.GetUserByIdAsync(id);
+        return Ok(user);
     }
 }

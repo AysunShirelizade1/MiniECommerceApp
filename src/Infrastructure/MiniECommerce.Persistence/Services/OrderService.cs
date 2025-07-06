@@ -1,5 +1,5 @@
-﻿using MiniECommerce.Application.Abstractions.Services;
-using MiniECommerce.Application.Abstracts.Repositories;
+﻿using MiniECommerce.Application.Abstracts.Repositories;
+using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Order;
 using MiniECommerce.Application.DTOs.OrderProduct;
 

@@ -1,6 +1,6 @@
 ﻿using MiniECommerce.Application.DTOs.Favorite;
 
-namespace MiniECommerce.Application.Abstractions.Services;
+namespace MiniECommerce.Application.Abstracts.Services;
 
 public interface IFavoriteService
 {

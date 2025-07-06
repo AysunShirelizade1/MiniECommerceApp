@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MiniECommerce.Application.Abstractions.Services;
 using MiniECommerce.Application.Abstracts.Repositories;
+using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.CategoryDto;
 using MiniECommerce.Domain.Entities;
 namespace MiniECommerce.Persistence.Services;
