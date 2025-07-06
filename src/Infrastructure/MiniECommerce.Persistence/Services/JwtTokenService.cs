@@ -2,9 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MiniECommerce.Domain.Entities;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Globalization;
 namespace MiniECommerce.Persistence.Services;
 public class JwtTokenService
 {
@@ -31,7 +33,8 @@ public class JwtTokenService
         };
 
             foreach (var role in rolesFromDb)
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Role, CultureInfo.InvariantCulture.TextInfo.ToTitleCase(role)));
+
 
             var jwtKey = _configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(jwtKey))

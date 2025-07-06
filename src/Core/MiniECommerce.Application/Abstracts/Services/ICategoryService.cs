@@ -1,6 +1,6 @@
 ﻿using MiniECommerce.Application.DTOs.CategoryDto;
 
-namespace MiniECommerce.Application.Abstractions.Services;
+namespace MiniECommerce.Application.Abstracts.Services;
 public interface ICategoryService
 {
     Task<List<CategoryDto>> GetAllAsync();

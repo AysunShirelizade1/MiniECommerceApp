@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MiniECommerce.WebApi.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "admin")]
 [Route("api/[controller]")]
 [ApiController]
 public class RoleController : ControllerBase

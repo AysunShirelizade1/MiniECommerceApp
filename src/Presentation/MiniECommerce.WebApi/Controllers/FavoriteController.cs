@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MiniECommerce.Application.Abstractions.Services;
+using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Favorite;
 
 namespace MiniECommerce.WebAPI.Controllers;

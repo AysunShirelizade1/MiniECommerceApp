@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MiniECommerce.Application.Abstractions.Services;
 using MiniECommerce.Application.Abstracts.Repositories;
 using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Persistence.Repositories;
@@ -27,7 +26,8 @@ public static class ServiceRegistration
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IFavoriteService, FavoriteService>();
-
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IImageService, ImageService>();
         #endregion
 
 
