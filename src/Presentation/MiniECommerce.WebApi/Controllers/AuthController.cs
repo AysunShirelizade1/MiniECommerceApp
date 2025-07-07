@@ -34,7 +34,7 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // ✅ Rolu formatla (məs: "admin" → "Admin")
+        // Rolu formatla (məs: "admin" → "Admin")
         dto.Role = char.ToUpper(dto.Role[0]) + dto.Role.Substring(1).ToLower();
 
         var existingUser = await _userManager.FindByEmailAsync(dto.Email);
@@ -52,7 +52,7 @@ public class AuthController : ControllerBase
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        // ✅ AppRole istifadəsi
+        //  AppRole istifadəsi
         if (!await _roleManager.RoleExistsAsync(dto.Role))
             await _roleManager.CreateAsync(new AppRole { Name = dto.Role });
 

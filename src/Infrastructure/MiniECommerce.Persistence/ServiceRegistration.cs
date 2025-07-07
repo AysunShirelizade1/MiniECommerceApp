@@ -19,6 +19,7 @@ public static class ServiceRegistration
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IFavoriteRepository, FavoriteRepository>();
         services.AddScoped<IImageRepository, ImageRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
         #endregion
 
         #region Services
@@ -32,6 +33,7 @@ public static class ServiceRegistration
         services.AddScoped<IFavoriteService, FavoriteService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IImageService, ImageService>();
+        services.AddScoped<IReviewService, ReviewService>();
         #endregion
     }
 

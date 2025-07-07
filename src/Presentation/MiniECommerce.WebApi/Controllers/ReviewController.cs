@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.DTOs.ReviewDto;
 using MiniECommerce.Domain.Entities;
+using System.Security.Claims;
 
 namespace MiniECommerce.WebAPI.Controllers;
 
@@ -10,6 +12,7 @@ public class ReviewController : ControllerBase
 {
     // GET: api/review
     [HttpGet]
+    [AllowAnonymous] // hamıya açıq
     public IActionResult GetAll()
     {
         var mockReviews = new List<ReviewDto>
@@ -35,9 +38,9 @@ public class ReviewController : ControllerBase
 
     // GET: api/review/{id}
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public IActionResult GetById(Guid id)
     {
-        // Mock Review
         var review = new Review
         {
             Id = id,
@@ -51,18 +54,24 @@ public class ReviewController : ControllerBase
 
     // POST: api/review
     [HttpPost]
+    [Authorize(Policy = "Review.Create")]
     public IActionResult Create([FromBody] ReviewCreateDto dto)
     {
-        // Normalda: yeni review yaradıb DB-yə save edərsən
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+            return Unauthorized();
+
+        // Burada realda DB-yə save etmək lazım
         var newId = Guid.NewGuid();
         return CreatedAtAction(nameof(GetById), new { id = newId }, null);
     }
 
     // DELETE: api/review/{id}
     [HttpDelete("{id}")]
+    [Authorize(Policy = "Review.Delete")]
     public IActionResult Delete(Guid id)
     {
-        // Normalda: review silinər
+        // Burada silmək əməliyyatını həyata keçir
         return NoContent();
     }
 }

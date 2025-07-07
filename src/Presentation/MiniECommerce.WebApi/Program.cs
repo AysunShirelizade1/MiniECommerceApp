@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,12 +13,14 @@ using MiniECommerce.Persistence.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// 💡 Custom service-lərin qeydiyyatı
 builder.Services.RegisterService(builder.Configuration);
 
+// ✅ DbContext qeydiyyatı
 builder.Services.AddDbContext<MiniECommerceDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
+// ✅ Identity qeydiyyatı
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -26,11 +29,13 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
 })
-    .AddEntityFrameworkStores<MiniECommerceDbContext>()
-    .AddDefaultTokenProviders();
+.AddEntityFrameworkStores<MiniECommerceDbContext>()
+.AddDefaultTokenProviders();
 
+// ✅ JWT Token Service qeydiyyatı
 builder.Services.AddScoped<JwtTokenService>();
 
+// ✅ JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -47,18 +52,81 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-
         RoleClaimType = ClaimTypes.Role
     };
 });
 
+// ✅ Permission-based Policy Authorization
+builder.Services.AddScoped<IAuthorizationHandler, PermissionHandler>();
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    // 🟢 Category icazələri
+    options.AddPolicy("Category.Read", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Category.Read")));
+    options.AddPolicy("Category.Create", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Category.Create")));
+    options.AddPolicy("Category.Update", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Category.Update")));
+    options.AddPolicy("Category.Delete", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Category.Delete")));
+
+    // 🟢 Product icazələri
+    options.AddPolicy("Product.Read", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Product.Read")));
+    options.AddPolicy("Product.Create", policy =>
+    policy.Requirements.Add(new PermissionRequirement("Product.Create")));
+
+    options.AddPolicy("Product.Update", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Product.Update")));
+
+    options.AddPolicy("Product.Delete", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Product.Delete")));
+
+
+    // 🟢 Order icazələri
+    options.AddPolicy("Order.Read", policy =>
+    policy.Requirements.Add(new PermissionRequirement("Order.Read")));
+
+    options.AddPolicy("Order.Create", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Order.Create")));
+
+    options.AddPolicy("Order.Update", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Order.Update")));
+
+
+    // 🟢 Image icazələri
+    options.AddPolicy("Image.Create", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Image.Create")));
+    options.AddPolicy("Image.Update", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Image.Update")));
+    options.AddPolicy("Image.Delete", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Image.Delete")));
+
+    // 🟢 Review icazələri
+    options.AddPolicy("Review.Create", policy =>
+    policy.Requirements.Add(new PermissionRequirement("Review.Create")));
+
+    options.AddPolicy("Review.Delete", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Review.Delete")));
+
+
+    // 🟢 User və Role idarəsi
+    options.AddPolicy("User.Manage", policy =>
+        policy.Requirements.Add(new PermissionRequirement("User.Manage")));
+    options.AddPolicy("Role.Manage", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Role.Manage")));
+
+    // 🟢 Statistikalar və idarə paneli
+    options.AddPolicy("Analytics.View", policy =>
+        policy.Requirements.Add(new PermissionRequirement("Analytics.View")));
+});
+
 
 builder.Services.AddControllers();
 
+// ✅ Swagger
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mini E-Commerce API", Version = "v1" });
@@ -70,7 +138,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Authorization header istifadə olunur. Format: Bearer {token}"
+        Description = "JWT formatında token daxil edin. Məsələn: Bearer eyJhbGciOi..."
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -84,15 +152,14 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
+// ✅ Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -105,5 +172,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();

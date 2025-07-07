@@ -12,8 +12,8 @@ using MiniECommerce.Persistence.Contexts;
 namespace MiniECommerce.Persistence.Migrations
 {
     [DbContext(typeof(MiniECommerceDbContext))]
-    [Migration("20250705135015_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250707104634_ResetDatabase")]
+    partial class ResetDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -342,6 +342,21 @@ namespace MiniECommerce.Persistence.Migrations
                     b.ToTable("Images");
                 });
 
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Permission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+                });
+
             modelBuilder.Entity("MiniECommerce.Domain.Entities.Review", b =>
                 {
                     b.Property<Guid>("Id")
@@ -382,6 +397,21 @@ namespace MiniECommerce.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.RolePermission", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("Order", b =>
@@ -668,6 +698,25 @@ namespace MiniECommerce.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.RolePermission", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiniECommerce.Domain.Entities.AppRole", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Order", b =>
                 {
                     b.HasOne("MiniECommerce.Domain.Entities.AppUser", "Buyer")
@@ -753,11 +802,21 @@ namespace MiniECommerce.Persistence.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.AppRole", b =>
+                {
+                    b.Navigation("RolePermissions");
+                });
+
             modelBuilder.Entity("MiniECommerce.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Products");
 
                     b.Navigation("SubCategories");
+                });
+
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
                 });
 
             modelBuilder.Entity("Order", b =>

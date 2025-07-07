@@ -9,7 +9,6 @@ namespace MiniECommerce.WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Admin,Moderator,Seller")]
 public class CategoryController : ControllerBase
 {
     private readonly MiniECommerceDbContext _context;
@@ -21,6 +20,7 @@ public class CategoryController : ControllerBase
 
     // GET: api/Category
     [HttpGet]
+    [Authorize(Policy = "ViewCategories")]  // İstifadəçilər hansısa policy ilə baxa bilərlər, yoxsa [AllowAnonymous] da ola bilər
     public async Task<IActionResult> GetCategories()
     {
         var categories = await _context.Categories
@@ -35,6 +35,7 @@ public class CategoryController : ControllerBase
 
     // GET: api/Category/{id}
     [HttpGet("{id}")]
+    [Authorize(Policy = "ViewCategories")]
     public async Task<IActionResult> GetCategory(Guid id)
     {
         var category = await _context.Categories
@@ -49,6 +50,7 @@ public class CategoryController : ControllerBase
 
     // POST: api/Category
     [HttpPost]
+    [Authorize(Policy = "CreateCategory")]
     public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto dto)
     {
         if (!ModelState.IsValid)
@@ -76,6 +78,7 @@ public class CategoryController : ControllerBase
 
     // PUT: api/Category/{id}
     [HttpPut("{id}")]
+    [Authorize(Policy = "EditCategory")]
     public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] CategoryCreateDto dto)
     {
         if (!ModelState.IsValid)
@@ -106,6 +109,7 @@ public class CategoryController : ControllerBase
 
     // DELETE: api/Category/{id}
     [HttpDelete("{id}")]
+    [Authorize(Policy = "DeleteCategory")]
     public async Task<IActionResult> DeleteCategory(Guid id)
     {
         var category = await _context.Categories

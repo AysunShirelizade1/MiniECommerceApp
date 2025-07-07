@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Email;
 
@@ -6,6 +7,7 @@ namespace MiniECommerce.WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = "SendTestEmail")] // YALNIZ bu policy olanlar icazə alacaq
 public class EmailController : ControllerBase
 {
     private readonly IEmailService _emailService;
@@ -20,7 +22,7 @@ public class EmailController : ControllerBase
     {
         var emailDto = new EmailDto
         {
-            To = "sunahacker01@gmail.com", 
+            To = "sunahacker01@gmail.com",
             Subject = "Test Email from MiniECommerce",
             Body = "<strong>Bu email SMTP ilə göndərildi!</strong>"
         };
