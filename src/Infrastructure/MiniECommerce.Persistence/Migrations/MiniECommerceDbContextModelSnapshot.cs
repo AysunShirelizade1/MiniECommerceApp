@@ -8,770 +8,830 @@ using MiniECommerce.Persistence.Contexts;
 
 #nullable disable
 
-namespace MiniECommerce.Persistence.Migrations;
-
-[DbContext(typeof(MiniECommerceDbContext))]
-partial class MiniECommerceDbContextModelSnapshot : ModelSnapshot
+namespace MiniECommerce.Persistence.Migrations
 {
-    protected override void BuildModel(ModelBuilder modelBuilder)
+    [DbContext(typeof(MiniECommerceDbContext))]
+    partial class MiniECommerceDbContextModelSnapshot : ModelSnapshot
     {
+        protected override void BuildModel(ModelBuilder modelBuilder)
+        {
 #pragma warning disable 612, 618
-        modelBuilder
-            .HasAnnotation("ProductVersion", "8.0.16")
-            .HasAnnotation("Relational:MaxIdentifierLength", 128);
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.16")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-        SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                b.Property<string>("ClaimType")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("ClaimValue")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<Guid>("RoleId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("RoleId");
+                    b.HasIndex("RoleId");
 
-                b.ToTable("AspNetRoleClaims", (string)null);
-            });
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                b.Property<string>("ClaimType")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("ClaimValue")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<Guid>("UserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("UserId");
+                    b.HasIndex("UserId");
 
-                b.ToTable("AspNetUserClaims", (string)null);
-            });
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
-            {
-                b.Property<string>("LoginProvider")
-                    .HasColumnType("nvarchar(450)");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("ProviderKey")
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("ProviderDisplayName")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<Guid>("UserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasKey("LoginProvider", "ProviderKey");
+                    b.HasKey("LoginProvider", "ProviderKey");
 
-                b.HasIndex("UserId");
+                    b.HasIndex("UserId");
 
-                b.ToTable("AspNetUserLogins", (string)null);
-            });
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-            {
-                b.Property<Guid>("UserId")
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<Guid>("RoleId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasKey("UserId", "RoleId");
+                    b.HasKey("UserId", "RoleId");
 
-                b.HasIndex("RoleId");
+                    b.HasIndex("RoleId");
 
-                b.ToTable("AspNetUserRoles", (string)null);
-            });
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-            {
-                b.Property<Guid>("UserId")
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<string>("LoginProvider")
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("Name")
-                    .HasColumnType("nvarchar(450)");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
 
-                b.Property<string>("Value")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
 
-                b.HasKey("UserId", "LoginProvider", "Name");
+                    b.HasKey("UserId", "LoginProvider", "Name");
 
-                b.ToTable("AspNetUserTokens", (string)null);
-            });
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.AppRole", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.AppRole", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<string>("ConcurrencyStamp")
-                    .IsConcurrencyToken()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("Name")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.Property<string>("NormalizedName")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("NormalizedName")
-                    .IsUnique()
-                    .HasDatabaseName("RoleNameIndex")
-                    .HasFilter("[NormalizedName] IS NOT NULL");
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
-                b.ToTable("AspNetRoles", (string)null);
-            });
+                    b.ToTable("AspNetRoles", (string)null);
+                });
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.AppUser", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.AppUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<int>("AccessFailedCount")
-                    .HasColumnType("int");
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
 
-                b.Property<string>("ConcurrencyStamp")
-                    .IsConcurrencyToken()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("Email")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.Property<bool>("EmailConfirmed")
-                    .HasColumnType("bit");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
 
-                b.Property<string>("FullName")
-                    .IsRequired()
-                    .HasMaxLength(200)
-                    .HasColumnType("nvarchar(200)");
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                b.Property<bool>("LockoutEnabled")
-                    .HasColumnType("bit");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
 
-                b.Property<DateTimeOffset?>("LockoutEnd")
-                    .HasColumnType("datetimeoffset");
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
 
-                b.Property<string>("NormalizedEmail")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.Property<string>("NormalizedUserName")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.Property<string>("PasswordHash")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<string>("PhoneNumber")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("PhoneNumberConfirmed")
-                    .HasColumnType("bit");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
-                b.Property<string>("SecurityStamp")
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<bool>("TwoFactorEnabled")
-                    .HasColumnType("bit");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
 
-                b.Property<string>("UserName")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("NormalizedEmail")
-                    .HasDatabaseName("EmailIndex");
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
 
-                b.HasIndex("NormalizedUserName")
-                    .IsUnique()
-                    .HasDatabaseName("UserNameIndex")
-                    .HasFilter("[NormalizedUserName] IS NOT NULL");
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                b.ToTable("AspNetUsers", (string)null);
-            });
+                    b.ToTable("AspNetUsers", (string)null);
+                });
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.Category", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<DateTime>("CreatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid?>("CreatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<string>("Name")
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .HasColumnType("nvarchar(100)");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                b.Property<Guid?>("ParentCategoryId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("ParentCategoryId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<DateTime?>("UpdatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid?>("UpdatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CreatedByUserId");
 
-                b.HasIndex("ParentCategoryId");
+                    b.HasIndex("ParentCategoryId");
 
-                b.HasIndex("UpdatedByUserId");
+                    b.HasIndex("UpdatedByUserId");
 
-                b.ToTable("Categories");
-            });
+                    b.ToTable("Categories");
+                });
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.Favorite", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Favorite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<Guid>("AppUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<DateTime>("CreatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid?>("CreatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<Guid>("ProductId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<DateTime?>("UpdatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid?>("UpdatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CreatedByUserId");
 
-                b.HasIndex("ProductId");
+                    b.HasIndex("ProductId");
 
-                b.HasIndex("UpdatedByUserId");
+                    b.HasIndex("UpdatedByUserId");
 
-                b.HasIndex("AppUserId", "ProductId")
-                    .IsUnique();
+                    b.HasIndex("AppUserId", "ProductId")
+                        .IsUnique();
 
-                b.ToTable("Favorites");
-            });
+                    b.ToTable("Favorites");
+                });
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.Image", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Image", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<DateTime>("CreatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid?>("CreatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<string>("ImageUrl")
-                    .IsRequired()
-                    .HasMaxLength(500)
-                    .HasColumnType("nvarchar(500)");
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
-                b.Property<bool>("IsMain")
-                    .HasColumnType("bit");
+                    b.Property<bool>("IsMain")
+                        .HasColumnType("bit");
 
-                b.Property<Guid>("ProductId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<DateTime?>("UpdatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid?>("UpdatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CreatedByUserId");
 
-                b.HasIndex("ProductId");
+                    b.HasIndex("ProductId");
 
-                b.HasIndex("UpdatedByUserId");
+                    b.HasIndex("UpdatedByUserId");
 
-                b.ToTable("Images");
-            });
+                    b.ToTable("Images");
+                });
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.Review", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Permission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<string>("Comment")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<DateTime>("CreatedAt")
-                    .HasColumnType("datetime2");
+                    b.HasKey("Id");
 
-                b.Property<Guid?>("CreatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.ToTable("Permissions");
+                });
 
-                b.Property<Guid>("ProductId")
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<DateTime?>("UpdatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.Property<Guid?>("UpdatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid>("UserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasKey("Id");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasIndex("CreatedByUserId");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
-                b.HasIndex("UpdatedByUserId");
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasIndex("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasIndex("ProductId", "UserId")
-                    .IsUnique();
+                    b.HasKey("Id");
 
-                b.ToTable("Reviews");
-            });
+                    b.HasIndex("CreatedByUserId");
 
-        modelBuilder.Entity("Order", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uniqueidentifier");
+                    b.HasIndex("UpdatedByUserId");
 
-                b.Property<Guid>("BuyerId")
-                    .HasColumnType("uniqueidentifier");
+                    b.HasIndex("UserId");
 
-                b.Property<DateTime>("CreatedAt")
-                    .HasColumnType("datetime2");
+                    b.HasIndex("ProductId", "UserId")
+                        .IsUnique();
 
-                b.Property<Guid?>("CreatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.ToTable("Reviews");
+                });
 
-                b.Property<string>("Status")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("nvarchar(50)");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.RolePermission", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<DateTime?>("UpdatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<Guid?>("UpdatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.HasKey("RoleId", "PermissionId");
 
-                b.HasKey("Id");
+                    b.HasIndex("PermissionId");
 
-                b.HasIndex("BuyerId");
+                    b.ToTable("RolePermissions");
+                });
 
-                b.HasIndex("CreatedByUserId");
+            modelBuilder.Entity("Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasIndex("UpdatedByUserId");
+                    b.Property<Guid>("BuyerId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.ToTable("Orders");
-            });
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-        modelBuilder.Entity("OrderProduct", b =>
-            {
-                b.Property<Guid>("OrderId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<Guid>("ProductId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                b.Property<DateTime>("CreatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid?>("CreatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<Guid>("Id")
-                    .HasColumnType("uniqueidentifier");
+                    b.HasKey("Id");
 
-                b.Property<int>("Quantity")
-                    .HasColumnType("int");
+                    b.HasIndex("BuyerId");
 
-                b.Property<decimal>("UnitPrice")
-                    .HasColumnType("decimal(18,2)");
+                    b.HasIndex("CreatedByUserId");
 
-                b.Property<DateTime?>("UpdatedAt")
-                    .HasColumnType("datetime2");
+                    b.HasIndex("UpdatedByUserId");
 
-                b.Property<Guid?>("UpdatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.ToTable("Orders");
+                });
 
-                b.HasKey("OrderId", "ProductId");
+            modelBuilder.Entity("OrderProduct", b =>
+                {
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasIndex("CreatedByUserId");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasIndex("ProductId");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                b.HasIndex("UpdatedByUserId");
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.ToTable("OrderProducts");
-            });
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
-        modelBuilder.Entity("Product", b =>
-            {
-                b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
-                b.Property<Guid>("CategoryId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
 
-                b.Property<DateTime>("CreatedAt")
-                    .HasColumnType("datetime2");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
-                b.Property<Guid?>("CreatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.Property<string>("Description")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
+                    b.HasKey("OrderId", "ProductId");
 
-                b.Property<Guid>("OwnerId")
-                    .HasColumnType("uniqueidentifier");
+                    b.HasIndex("CreatedByUserId");
 
-                b.Property<decimal>("Price")
-                    .HasColumnType("decimal(18,2)");
+                    b.HasIndex("ProductId");
 
-                b.Property<string>("Title")
-                    .IsRequired()
-                    .HasMaxLength(200)
-                    .HasColumnType("nvarchar(200)");
+                    b.HasIndex("UpdatedByUserId");
 
-                b.Property<DateTime?>("UpdatedAt")
-                    .HasColumnType("datetime2");
+                    b.ToTable("OrderProducts");
+                });
 
-                b.Property<Guid?>("UpdatedByUserId")
-                    .HasColumnType("uniqueidentifier");
+            modelBuilder.Entity("Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasKey("Id");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasIndex("CategoryId");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                b.HasIndex("CreatedByUserId");
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.HasIndex("OwnerId");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                b.HasIndex("UpdatedByUserId");
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
 
-                b.ToTable("Products");
-            });
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppRole", null)
-                    .WithMany()
-                    .HasForeignKey("RoleId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppRole", null)
-                    .WithMany()
-                    .HasForeignKey("RoleId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasKey("Id");
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.HasIndex("CategoryId");
 
-        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.HasIndex("CreatedByUserId");
 
-        modelBuilder.Entity("MiniECommerceApp.Domain.Entities.Category", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
-                    .WithMany()
-                    .HasForeignKey("CreatedByUserId");
+                    b.HasIndex("OwnerId");
 
-                b.HasOne("MiniECommerce.Domain.Entities.Category", "ParentCategory")
-                    .WithMany("SubCategories")
-                    .HasForeignKey("ParentCategoryId")
-                    .OnDelete(DeleteBehavior.Restrict);
+                    b.HasIndex("UpdatedByUserId");
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
-                    .WithMany()
-                    .HasForeignKey("UpdatedByUserId");
+                    b.ToTable("Products");
+                });
 
-                b.Navigation("CreatedByUser");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                b.Navigation("ParentCategory");
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                b.Navigation("UpdatedByUser");
-            });
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.Favorite", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "AppUser")
-                    .WithMany()
-                    .HasForeignKey("AppUserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
-                    .WithMany()
-                    .HasForeignKey("CreatedByUserId");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                b.HasOne("Product", "Product")
-                    .WithMany("Favorites")
-                    .HasForeignKey("ProductId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
-                    .WithMany()
-                    .HasForeignKey("UpdatedByUserId");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
 
-                b.Navigation("AppUser");
+                    b.HasOne("MiniECommerce.Domain.Entities.Category", "ParentCategory")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                b.Navigation("CreatedByUser");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
 
-                b.Navigation("Product");
+                    b.Navigation("CreatedByUser");
 
-                b.Navigation("UpdatedByUser");
-            });
+                    b.Navigation("ParentCategory");
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.Image", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
-                    .WithMany()
-                    .HasForeignKey("CreatedByUserId");
+                    b.Navigation("UpdatedByUser");
+                });
 
-                b.HasOne("Product", "Product")
-                    .WithMany("Images")
-                    .HasForeignKey("ProductId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Favorite", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
-                    .WithMany()
-                    .HasForeignKey("UpdatedByUserId");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
 
-                b.Navigation("CreatedByUser");
+                    b.HasOne("Product", "Product")
+                        .WithMany("Favorites")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Product");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
 
-                b.Navigation("UpdatedByUser");
-            });
+                    b.Navigation("AppUser");
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.Review", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
-                    .WithMany()
-                    .HasForeignKey("CreatedByUserId");
+                    b.Navigation("CreatedByUser");
 
-                b.HasOne("Product", "Product")
-                    .WithMany("Reviews")
-                    .HasForeignKey("ProductId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.Navigation("Product");
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
-                    .WithMany()
-                    .HasForeignKey("UpdatedByUserId");
+                    b.Navigation("UpdatedByUser");
+                });
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "User")
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Image", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
 
-                b.Navigation("CreatedByUser");
+                    b.HasOne("Product", "Product")
+                        .WithMany("Images")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Product");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
 
-                b.Navigation("UpdatedByUser");
+                    b.Navigation("CreatedByUser");
 
-                b.Navigation("User");
-            });
+                    b.Navigation("Product");
 
-        modelBuilder.Entity("Order", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "Buyer")
-                    .WithMany()
-                    .HasForeignKey("BuyerId")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                    b.Navigation("UpdatedByUser");
+                });
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
-                    .WithMany()
-                    .HasForeignKey("CreatedByUserId");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Review", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
-                    .WithMany()
-                    .HasForeignKey("UpdatedByUserId");
+                    b.HasOne("Product", "Product")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Buyer");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
 
-                b.Navigation("CreatedByUser");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("UpdatedByUser");
-            });
+                    b.Navigation("CreatedByUser");
 
-        modelBuilder.Entity("OrderProduct", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
-                    .WithMany()
-                    .HasForeignKey("CreatedByUserId");
+                    b.Navigation("Product");
 
-                b.HasOne("Order", "Order")
-                    .WithMany("OrderProducts")
-                    .HasForeignKey("OrderId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.Navigation("UpdatedByUser");
 
-                b.HasOne("Product", "Product")
-                    .WithMany("OrderProducts")
-                    .HasForeignKey("ProductId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.Navigation("User");
+                });
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
-                    .WithMany()
-                    .HasForeignKey("UpdatedByUserId");
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.RolePermission", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("CreatedByUser");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppRole", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Order");
+                    b.Navigation("Permission");
 
-                b.Navigation("Product");
+                    b.Navigation("Role");
+                });
 
-                b.Navigation("UpdatedByUser");
-            });
+            modelBuilder.Entity("Order", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-        modelBuilder.Entity("Product", b =>
-            {
-                b.HasOne("MiniECommerce.Domain.Entities.Category", "Category")
-                    .WithMany("Products")
-                    .HasForeignKey("CategoryId")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
-                    .WithMany()
-                    .HasForeignKey("CreatedByUserId");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "Owner")
-                    .WithMany()
-                    .HasForeignKey("OwnerId")
-                    .OnDelete(DeleteBehavior.Restrict)
-                    .IsRequired();
+                    b.Navigation("Buyer");
 
-                b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
-                    .WithMany()
-                    .HasForeignKey("UpdatedByUserId");
+                    b.Navigation("CreatedByUser");
 
-                b.Navigation("Category");
+                    b.Navigation("UpdatedByUser");
+                });
 
-                b.Navigation("CreatedByUser");
+            modelBuilder.Entity("OrderProduct", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
 
-                b.Navigation("Owner");
+                    b.HasOne("Order", "Order")
+                        .WithMany("OrderProducts")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("UpdatedByUser");
-            });
+                    b.HasOne("Product", "Product")
+                        .WithMany("OrderProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-        modelBuilder.Entity("MiniECommerce.Domain.Entities.Category", b =>
-            {
-                b.Navigation("Products");
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
 
-                b.Navigation("SubCategories");
-            });
+                    b.Navigation("CreatedByUser");
 
-        modelBuilder.Entity("Order", b =>
-            {
-                b.Navigation("OrderProducts");
-            });
+                    b.Navigation("Order");
 
-        modelBuilder.Entity("Product", b =>
-            {
-                b.Navigation("Favorites");
+                    b.Navigation("Product");
 
-                b.Navigation("Images");
+                    b.Navigation("UpdatedByUser");
+                });
 
-                b.Navigation("OrderProducts");
+            modelBuilder.Entity("Product", b =>
+                {
+                    b.HasOne("MiniECommerce.Domain.Entities.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                b.Navigation("Reviews");
-            });
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
+
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MiniECommerce.Domain.Entities.AppUser", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("UpdatedByUser");
+                });
+
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.AppRole", b =>
+                {
+                    b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Category", b =>
+                {
+                    b.Navigation("Products");
+
+                    b.Navigation("SubCategories");
+                });
+
+            modelBuilder.Entity("MiniECommerce.Domain.Entities.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("Order", b =>
+                {
+                    b.Navigation("OrderProducts");
+                });
+
+            modelBuilder.Entity("Product", b =>
+                {
+                    b.Navigation("Favorites");
+
+                    b.Navigation("Images");
+
+                    b.Navigation("OrderProducts");
+
+                    b.Navigation("Reviews");
+                });
 #pragma warning restore 612, 618
+        }
     }
 }

@@ -31,17 +31,18 @@ public class FavoriteController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
+        var userId = GetUserId();
         var favorite = await _favoriteService.GetByIdAsync(id);
+
         if (favorite == null)
             return NotFound("Favorit tapılmadı.");
 
-        var userId = GetUserId();
-        // Əgər favorit istifadəçiyə aid deyilsə, icazə vermə
-        // Əgər FavoriteDto-da userId yoxdursa, servisdə yoxlamaq lazım ola bilər.
-        // Burada sadəlik üçün istifadəçi yoxlanmır, amma servisə əlavə etmək daha doğru olar.
+        if (favorite.Id != userId)
+            return Forbid("Bu favoriti görmək üçün icazəniz yoxdur.");
 
         return Ok(favorite);
     }
+
 
     // POST: api/favorite
     [HttpPost]

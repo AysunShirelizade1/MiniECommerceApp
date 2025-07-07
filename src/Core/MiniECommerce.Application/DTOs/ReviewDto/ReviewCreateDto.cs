@@ -3,4 +3,6 @@
 public class ReviewCreateDto
 {
     public string Comment { get; set; } = null!;
+    public Guid ProductId { get; set; }  
 }
+

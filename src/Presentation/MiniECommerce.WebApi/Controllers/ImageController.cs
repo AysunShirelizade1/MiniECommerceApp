@@ -16,7 +16,7 @@ public class ImageController : ControllerBase
         _imageService = imageService;
     }
 
-    // GET api/image/product/{productId}
+    // GET: api/image/product/{productId}
     [HttpGet("product/{productId}")]
     public async Task<IActionResult> GetAllByProductId(Guid productId)
     {
@@ -24,27 +24,28 @@ public class ImageController : ControllerBase
         return Ok(images);
     }
 
-    // GET api/image/{id}
+    // GET: api/image/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var image = await _imageService.GetByIdAsync(id);
-        if (image == null) return NotFound();
+        if (image == null)
+            return NotFound("Şəkil tapılmadı.");
         return Ok(image);
     }
 
-    // POST api/image
+    // POST: api/image
     [HttpPost]
-    [Authorize]  // İstifadəçi login olmalıdır
+    [Authorize(Policy = "Image.Create")]  // seller və yuxarı
     public async Task<IActionResult> Create([FromBody] CreateImageDto dto)
     {
         await _imageService.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = dto.ProductId }, null);
     }
 
-    // PUT api/image/{id}
+    // PUT: api/image/{id}
     [HttpPut("{id}")]
-    [Authorize]
+    [Authorize(Policy = "Image.Update")]  // seller və yuxarı
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateImageDto dto)
     {
         try
@@ -58,9 +59,9 @@ public class ImageController : ControllerBase
         }
     }
 
-    // DELETE api/image/{id}
+    // DELETE: api/image/{id}
     [HttpDelete("{id}")]
-    [Authorize]
+    [Authorize(Policy = "Image.Delete")]  // seller və yuxarı
     public async Task<IActionResult> Delete(Guid id)
     {
         try

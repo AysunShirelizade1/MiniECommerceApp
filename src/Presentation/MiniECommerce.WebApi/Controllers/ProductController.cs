@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Product;
+using System.Security.Claims;
 
 namespace MiniECommerce.WebAPI.Controllers;
 
@@ -16,7 +17,7 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
-    // GET: api/product
+    // Everyone can view products
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -24,7 +25,6 @@ public class ProductController : ControllerBase
         return Ok(products);
     }
 
-    // GET: api/product/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
@@ -35,12 +35,12 @@ public class ProductController : ControllerBase
         return Ok(product);
     }
 
-    // POST: api/product
+    // Only authorized users with Product.Create permission
     [HttpPost]
-    [Authorize]
+    [Authorize(Policy = "Product.Create")]
     public async Task<IActionResult> Create([FromBody] ProductCreateDto dto)
     {
-        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         if (userIdClaim == null)
             return Unauthorized();
 
@@ -50,19 +50,18 @@ public class ProductController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = dto.CategoryId }, dto);
     }
 
-
-
-    // PUT: api/product
-    [HttpPut]
+    // Only Product.Update permission holders (Admin, Moderator, Seller with policy)
     [HttpPut("{id}")]
+    [Authorize(Policy = "Product.Update")]
     public async Task<IActionResult> Update(Guid id, [FromBody] ProductUpdateDto dto)
     {
         await _productService.UpdateAsync(id, dto);
         return NoContent();
     }
 
-    // DELETE: api/product/{id}
+    // Only Product.Delete permission holders
     [HttpDelete("{id}")]
+    [Authorize(Policy = "Product.Delete")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _productService.DeleteAsync(id);
