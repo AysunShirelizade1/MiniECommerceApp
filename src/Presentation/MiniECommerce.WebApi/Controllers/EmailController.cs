@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Email;
 
-namespace MiniECommerce.WebAPI.Controllers;
+namespace MiniECommerce.WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = "SendTestEmail")] // YALNIZ bu policy olanlar icazə alacaq
+[Authorize(Policy = "SendTestEmail")] // yalnız icazəsi olan rol və ya istifadəçilər
 public class EmailController : ControllerBase
 {
     private readonly IEmailService _emailService;
@@ -17,20 +17,18 @@ public class EmailController : ControllerBase
         _emailService = emailService;
     }
 
-    [HttpPost("send-test")]
-    public async Task<IActionResult> SendTestEmail()
+
+    /// <param name="dto">Email göndəriş detalları</param>
+    [HttpPost("send")]
+    public async Task<IActionResult> SendEmail([FromBody] EmailDto dto)
     {
-        var emailDto = new EmailDto
-        {
-            To = "sunahacker01@gmail.com",
-            Subject = "Test Email from MiniECommerce",
-            Body = "<strong>Bu email SMTP ilə göndərildi!</strong>"
-        };
+        if (string.IsNullOrWhiteSpace(dto.To) || string.IsNullOrWhiteSpace(dto.Subject) || string.IsNullOrWhiteSpace(dto.Body))
+            return BadRequest("To, Subject və Body boş ola bilməz.");
 
         try
         {
-            await _emailService.SendAsync(emailDto);
-            return Ok("Email uğurla göndərildi!");
+            await _emailService.SendAsync(dto);
+            return Ok("Email uğurla göndərildi.");
         }
         catch (Exception ex)
         {
