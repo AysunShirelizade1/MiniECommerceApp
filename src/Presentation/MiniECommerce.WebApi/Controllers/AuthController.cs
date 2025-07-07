@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MiniECommerce.Application.DTOs.AppUserDto;
+using MiniECommerce.Application.DTOs.RefreshTokenDto;
 using MiniECommerce.Domain.Entities;
 using MiniECommerce.Persistence.Services;
+
 namespace MiniECommerce.WebApi.Controllers;
 
 [Route("api/[controller]")]
@@ -34,7 +36,6 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // Rolu formatla (məs: "admin" → "Admin")
         dto.Role = char.ToUpper(dto.Role[0]) + dto.Role.Substring(1).ToLower();
 
         var existingUser = await _userManager.FindByEmailAsync(dto.Email);
@@ -52,7 +53,6 @@ public class AuthController : ControllerBase
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        //  AppRole istifadəsi
         if (!await _roleManager.RoleExistsAsync(dto.Role))
             await _roleManager.CreateAsync(new AppRole { Name = dto.Role });
 
@@ -64,23 +64,34 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
-        try
-        {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user == null)
-                return Unauthorized("İstifadəçi tapılmadı");
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+        if (user == null)
+            return Unauthorized("İstifadəçi tapılmadı");
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
-            if (!result.Succeeded)
-                return Unauthorized("Şifrə yalnışdır");
+        var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
+        if (!result.Succeeded)
+            return Unauthorized("Şifrə yalnışdır");
 
-            var token = await _jwtService.GenerateToken(user);
-            return Ok(new { token });
-        }
-        catch (Exception ex)
+        var (accessToken, refreshToken) = await _jwtService.GenerateTokenWithRefreshToken(user, HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+
+        return Ok(new
         {
-            return StatusCode(500, $"Xəta baş verdi: {ex.Message}");
-        }
+            accessToken,
+            refreshToken
+        });
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshAccessToken([FromBody] RefreshTokenRequest request)
+    {
+        var newAccessToken = await _jwtService.RefreshAccessToken(request.Token);
+        if (newAccessToken == null)
+            return Unauthorized("Refresh token etibarsız və ya vaxtı keçib.");
+
+        return Ok(new
+        {
+            accessToken = newAccessToken
+        });
     }
 
     [HttpGet("me")]
@@ -105,6 +116,4 @@ public class AuthController : ControllerBase
             Roles = roles
         });
     }
-
-
 }

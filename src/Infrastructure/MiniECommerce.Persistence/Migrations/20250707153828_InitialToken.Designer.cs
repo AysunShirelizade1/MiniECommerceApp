@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniECommerce.Persistence.Contexts;
 
@@ -11,9 +12,11 @@ using MiniECommerce.Persistence.Contexts;
 namespace MiniECommerce.Persistence.Migrations
 {
     [DbContext(typeof(MiniECommerceDbContext))]
-    partial class MiniECommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250707153828_InitialToken")]
+    partial class InitialToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -21,6 +21,8 @@ public class MiniECommerceDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 
     public DbSet<Permission> Permissions { get; set; } = null!;
     public DbSet<RolePermission> RolePermissions { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

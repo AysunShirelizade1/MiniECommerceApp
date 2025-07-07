@@ -83,6 +83,12 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Product.Delete", policy =>
         policy.Requirements.Add(new PermissionRequirement("Product.Delete")));
 
+    // 🟢 Email göndərmə icazəsi
+
+    options.AddPolicy("SendTestEmail", policy =>
+    policy.RequireClaim(ClaimTypes.Role, "Admin")); // Yaxud uyğun rolu qoy
+
+
 
     // 🟢 Order icazələri
     options.AddPolicy("Order.Read", policy =>
