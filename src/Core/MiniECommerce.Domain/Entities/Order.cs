@@ -8,4 +8,6 @@ public class Order : BaseEntity
     public AppUser Buyer { get; set; } = null!;
 
     public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
+    public List<OrderStatusHistory> StatusHistories { get; set; } = new();
+
 }

@@ -18,6 +18,7 @@ public class MiniECommerceDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<Review> Reviews { get; set; } = null!;
     public DbSet<Favorite> Favorites { get; set; } = null!;
     public DbSet<Image> Images { get; set; } = null!;
+    public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; } = null!;
 
     public DbSet<Permission> Permissions { get; set; } = null!;
     public DbSet<RolePermission> RolePermissions { get; set; } = null!;

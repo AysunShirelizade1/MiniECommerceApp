@@ -19,4 +19,12 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(p => p.Category)
             .ToListAsync();
     }
+    public async Task<Product?> GetByIdWithIncludesAsync(Guid id)
+    {
+        return await _context.Products
+            .Include(p => p.Owner)
+            .Include(p => p.Category)
+            .Include(p => p.Images)
+            .FirstOrDefaultAsync(p => p.Id == id);
+    }
 }

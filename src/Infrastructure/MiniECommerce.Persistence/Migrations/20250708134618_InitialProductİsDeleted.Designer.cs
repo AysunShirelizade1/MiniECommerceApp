@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniECommerce.Persistence.Contexts;
 
@@ -11,9 +12,11 @@ using MiniECommerce.Persistence.Contexts;
 namespace MiniECommerce.Persistence.Migrations
 {
     [DbContext(typeof(MiniECommerceDbContext))]
-    partial class MiniECommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250708134618_InitialProductİsDeleted")]
+    partial class InitialProductİsDeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -343,29 +346,6 @@ namespace MiniECommerce.Persistence.Migrations
                     b.HasIndex("UpdatedByUserId");
 
                     b.ToTable("Images");
-                });
-
-            modelBuilder.Entity("MiniECommerce.Domain.Entities.OrderStatusHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ChangedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderStatusHistories");
                 });
 
             modelBuilder.Entity("MiniECommerce.Domain.Entities.Permission", b =>
@@ -720,17 +700,6 @@ namespace MiniECommerce.Persistence.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
-            modelBuilder.Entity("MiniECommerce.Domain.Entities.OrderStatusHistory", b =>
-                {
-                    b.HasOne("Order", "Order")
-                        .WithMany("StatusHistories")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("MiniECommerce.Domain.Entities.Review", b =>
                 {
                     b.HasOne("MiniECommerce.Domain.Entities.AppUser", "CreatedByUser")
@@ -886,8 +855,6 @@ namespace MiniECommerce.Persistence.Migrations
             modelBuilder.Entity("Order", b =>
                 {
                     b.Navigation("OrderProducts");
-
-                    b.Navigation("StatusHistories");
                 });
 
             modelBuilder.Entity("Product", b =>

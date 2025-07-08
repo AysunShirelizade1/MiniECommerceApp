@@ -13,14 +13,14 @@ using MiniECommerce.Persistence.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 💡 Custom service-lərin qeydiyyatı
+//  Custom service-lərin qeydiyyatı
 builder.Services.RegisterService(builder.Configuration);
 
-// ✅ DbContext qeydiyyatı
+// ✅DbContext qeydiyyatı
 builder.Services.AddDbContext<MiniECommerceDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-// ✅ Identity qeydiyyatı
+//  Identity qeydiyyatı
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -32,10 +32,10 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
 .AddEntityFrameworkStores<MiniECommerceDbContext>()
 .AddDefaultTokenProviders();
 
-// ✅ JWT Token Service qeydiyyatı
+// JWT Token Service qeydiyyatı
 builder.Services.AddScoped<JwtTokenService>();
 
-// ✅ JWT Authentication
+// JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,12 +56,12 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// ✅ Permission-based Policy Authorization
+//  Permission-based Policy Authorization
 builder.Services.AddScoped<IAuthorizationHandler, PermissionHandler>();
 
 builder.Services.AddAuthorization(options =>
 {
-    // 🟢 Category icazələri
+    // Category icazələri
     options.AddPolicy("Category.Read", policy =>
         policy.Requirements.Add(new PermissionRequirement("Category.Read")));
     options.AddPolicy("Category.Create", policy =>
@@ -71,7 +71,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Category.Delete", policy =>
         policy.Requirements.Add(new PermissionRequirement("Category.Delete")));
 
-    // 🟢 Product icazələri
+    //  Product icazələri
     options.AddPolicy("Product.Read", policy =>
         policy.Requirements.Add(new PermissionRequirement("Product.Read")));
     options.AddPolicy("Product.Create", policy =>
@@ -83,14 +83,14 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Product.Delete", policy =>
         policy.Requirements.Add(new PermissionRequirement("Product.Delete")));
 
-    // 🟢 Email göndərmə icazəsi
+    // Email göndərmə icazəsi
 
     options.AddPolicy("SendTestEmail", policy =>
     policy.RequireClaim(ClaimTypes.Role, "Admin")); // Yaxud uyğun rolu qoy
 
 
 
-    // 🟢 Order icazələri
+    // Order icazələri
     options.AddPolicy("Order.Read", policy =>
     policy.Requirements.Add(new PermissionRequirement("Order.Read")));
 
@@ -101,7 +101,7 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new PermissionRequirement("Order.Update")));
 
 
-    // 🟢 Image icazələri
+    // Image icazələri
     options.AddPolicy("Image.Create", policy =>
         policy.Requirements.Add(new PermissionRequirement("Image.Create")));
     options.AddPolicy("Image.Update", policy =>
@@ -109,7 +109,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Image.Delete", policy =>
         policy.Requirements.Add(new PermissionRequirement("Image.Delete")));
 
-    // 🟢 Review icazələri
+    // Review icazələri
     options.AddPolicy("Review.Create", policy =>
     policy.Requirements.Add(new PermissionRequirement("Review.Create")));
 
@@ -117,13 +117,13 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new PermissionRequirement("Review.Delete")));
 
 
-    // 🟢 User və Role idarəsi
+    //  User və Role idarəsi
     options.AddPolicy("User.Manage", policy =>
         policy.Requirements.Add(new PermissionRequirement("User.Manage")));
     options.AddPolicy("Role.Manage", policy =>
         policy.Requirements.Add(new PermissionRequirement("Role.Manage")));
 
-    // 🟢 Statistikalar və idarə paneli
+    // Statistikalar və idarə paneli
     options.AddPolicy("Analytics.View", policy =>
         policy.Requirements.Add(new PermissionRequirement("Analytics.View")));
 });
@@ -131,7 +131,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddControllers();
 
-// ✅ Swagger
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -164,8 +164,14 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+// DB initializasiyası
+//using (var scope = app.Services.CreateScope())
+//{
+//    var context = scope.ServiceProvider.GetRequiredService<MiniECommerceDbContext>();
+//    await DbInitializer.InitializeAsync(context);
+//}
 
-// ✅ Pipeline
+//  Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
