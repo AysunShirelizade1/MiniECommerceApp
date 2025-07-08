@@ -17,10 +17,13 @@ public class OrderRepository : Repository<Order>, IOrderRepository
     public async Task<Order?> GetOrderWithProductsAsync(Guid id)
     {
         return await _context.Orders
+            .Include(o => o.Buyer) // <<< ƏSAS DƏYİŞİKLİK BURADADIR
             .Include(o => o.OrderProducts)
                 .ThenInclude(op => op.Product)
             .FirstOrDefaultAsync(o => o.Id == id);
     }
+
+
 
     public async Task<List<Order>> GetAllWithProductsAsync()
     {
