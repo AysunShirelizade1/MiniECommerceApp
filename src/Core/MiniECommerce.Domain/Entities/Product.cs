@@ -16,4 +16,5 @@ public class Product : BaseEntity
     public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
     public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public bool IsDeleted { get; set; }
 }

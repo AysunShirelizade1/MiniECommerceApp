@@ -4,7 +4,8 @@ namespace MiniECommerce.Application.Abstracts.Repositories;
 
 public interface ICategoryRepository : IRepository<Category>
 {
-    Task<List<Category>> GetAllWithSubCategoriesAsync();
-    Task<Category?> GetByIdWithSubCategoriesAsync(Guid id);
-
+    IQueryable<Category> GetAllIncludingSubCategories(bool includeDeleted = false);
+    Task<Category?> GetByIdWithSubCategoriesAsync(Guid id, bool includeDeleted = false);
+    Task<int> GetSubCategoriesCountAsync(Guid categoryId);
+    Task<int> GetProductsCountByCategoryAsync(Guid categoryId);
 }

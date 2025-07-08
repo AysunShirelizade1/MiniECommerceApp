@@ -2,7 +2,9 @@
 using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.Email;
 using MiniECommerce.Application.DTOs.Order;
+using MiniECommerce.Application.DTOs.OrderDto;
 using MiniECommerce.Application.DTOs.OrderProduct;
+using MiniECommerce.Domain.Entities;
 
 namespace MiniECommerce.Persistence.Services;
 
@@ -17,14 +19,13 @@ public class OrderService : IOrderService
         IOrderRepository orderRepository,
         IProductRepository productRepository,
         IEmailService emailService,
-        IUserService userService) 
+        IUserService userService)
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
         _emailService = emailService;
         _userService = userService;
     }
-
 
     public async Task<List<OrderListDto>> GetAllAsync()
     {
@@ -37,6 +38,51 @@ public class OrderService : IOrderService
             CreatedAt = o.CreatedAt,
             ProductCount = o.OrderProducts.Count
         }).ToList();
+    }
+    public async Task<List<OrderListDto>> GetOrdersByBuyerIdAsync(Guid buyerId)
+    {
+        var orders = await _orderRepository.GetAllWithProductsAsync();
+        return orders
+            .Where(o => o.BuyerId == buyerId)
+            .Select(o => new OrderListDto
+            {
+                Id = o.Id,
+                Status = o.Status,
+                CreatedAt = o.CreatedAt,
+                ProductCount = o.OrderProducts.Count
+            }).ToList();
+    }
+
+
+    public async Task<List<OrderStatusHistoryDto>> GetStatusHistoryAsync(Guid orderId)
+    {
+        var histories = await _orderRepository.GetOrderStatusHistoryAsync(orderId);
+
+        return histories.Select(h => new OrderStatusHistoryDto
+        {
+            Status = h.Status,
+            ChangedAt = h.ChangedAt
+        }).ToList();
+    }
+
+    public async Task CancelOrderAsync(Guid orderId)
+    {
+        var order = await _orderRepository.GetByIdAsync(orderId);
+        if (order == null)
+            throw new Exception("Order not found");
+
+        if (order.Status == "Cancelled")
+            throw new Exception("Order already cancelled");
+
+        order.Status = "Cancelled";
+        await _orderRepository.UpdateAsync(order);
+
+        await _orderRepository.AddOrderStatusHistoryAsync(new OrderStatusHistory
+        {
+            OrderId = orderId,
+            Status = "Cancelled",
+            ChangedAt = DateTime.UtcNow
+        });
     }
 
     public async Task<OrderDetailDto?> GetByIdAsync(Guid id)
@@ -91,23 +137,38 @@ public class OrderService : IOrderService
         await _orderRepository.AddAsync(order);
         await _orderRepository.SaveChangeAsync();
 
-        // İstifadəçinin emailini alırıq
+        // E-poçt göndərilməsi
         var buyerEmail = await _userService.GetEmailByIdAsync(buyerId);
         if (!string.IsNullOrEmpty(buyerEmail))
         {
             await _emailService.SendAsync(new EmailDto
             {
-                To = "sunahacker01@gmail.com",
+                To = buyerEmail, // real istifadəçi emaili
                 Subject = "Sifariş təsdiqi",
                 Body = $"Sifarişiniz (ID: {order.Id}) qəbul edildi. Ümumi məhsul sayı: {order.OrderProducts.Count}."
             });
-
         }
 
         return order.Id;
     }
 
+    public async Task<List<OrderListDto>> GetMySalesAsync(Guid userId)
+    {
+        var allOrders = await _orderRepository.GetAllWithProductsAsync();
 
+        var sales = allOrders
+            .Where(o => o.OrderProducts.Any(op => op.Product.OwnerId == userId))
+            .Select(o => new OrderListDto
+            {
+                Id = o.Id,
+                Status = o.Status,
+                CreatedAt = o.CreatedAt,
+                ProductCount = o.OrderProducts.Count
+            })
+            .ToList();
+
+        return sales;
+    }
 
 
     public async Task UpdateStatusAsync(OrderUpdateDto dto)
@@ -119,6 +180,13 @@ public class OrderService : IOrderService
         order.Status = dto.Status;
         _orderRepository.Update(order);
         await _orderRepository.SaveChangeAsync();
+
+        await _orderRepository.AddOrderStatusHistoryAsync(new OrderStatusHistory
+        {
+            OrderId = dto.OrderId,
+            Status = dto.Status,
+            ChangedAt = DateTime.UtcNow
+        });
     }
 
     public async Task DeleteAsync(Guid id)

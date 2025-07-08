@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.CategoryDto;
-using MiniECommerce.Domain.Entities;
-using MiniECommerce.Persistence.Contexts;
 
 namespace MiniECommerce.WebApi.Controllers;
 
@@ -11,131 +9,130 @@ namespace MiniECommerce.WebApi.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    private readonly MiniECommerceDbContext _context;
+    private readonly ICategoryService _categoryService;
 
-    public CategoryController(MiniECommerceDbContext context)
+    public CategoryController(ICategoryService categoryService)
     {
-        _context = context;
+        _categoryService = categoryService;
     }
 
-    // GET: api/Category
+    // GET: api/category
     [HttpGet]
-    [Authorize(Policy = "ViewCategories")]  // İstifadəçilər hansısa policy ilə baxa bilərlər, yoxsa [AllowAnonymous] da ola bilər
-    public async Task<IActionResult> GetCategories()
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAllCategories()
     {
-        var categories = await _context.Categories
-            .Where(c => c.ParentCategoryId == null)
-            .Include(c => c.SubCategories)
-            .ToListAsync();
-
-        var categoryDtos = categories.Select(c => MapToDto(c)).ToList();
-
-        return Ok(categoryDtos);
+        var (items, _) = await _categoryService.GetAllAsync(1, int.MaxValue, "Name", false, null);
+        return Ok(items);
     }
 
-    // GET: api/Category/{id}
-    [HttpGet("{id}")]
-    [Authorize(Policy = "ViewCategories")]
-    public async Task<IActionResult> GetCategory(Guid id)
+    // GET: api/category/filter
+    [HttpGet("filter")]
+    [Authorize(Policy = "Category.Read")]
+    public async Task<IActionResult> GetCategoriesFiltered(
+        int pageNumber = 1,
+        int pageSize = 10,
+        string? sortBy = "Name",
+        bool sortDesc = false,
+        string? search = null,
+        bool flat = false)
     {
-        var category = await _context.Categories
-            .Include(c => c.SubCategories)
-            .FirstOrDefaultAsync(c => c.Id == id);
+        var (items, totalCount) = await _categoryService.GetFilteredAsync(pageNumber, pageSize, sortBy, sortDesc, search, flat);
+        return Ok(new
+        {
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            Items = items
+        });
+    }
 
-        if (category == null)
+    // GET: api/category/{id}/stats
+    [HttpGet("{id}/stats")]
+    [Authorize(Policy = "Category.Read")]
+    public async Task<IActionResult> GetCategoryStats(Guid id)
+    {
+        var stats = await _categoryService.GetStatsAsync(id);
+        if (stats == null)
             return NotFound("Kateqoriya tapılmadı.");
 
-        return Ok(MapToDto(category));
+        return Ok(stats);
     }
 
-    // POST: api/Category
+    // POST: api/category
     [HttpPost]
-    [Authorize(Policy = "CreateCategory")]
+    [Authorize(Policy = "Category.Create")]
     public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        if (dto.ParentCategoryId != null)
-        {
-            var parentCategory = await _context.Categories.FindAsync(dto.ParentCategoryId);
-            if (parentCategory == null)
-                return BadRequest("Parent kateqoriya tapılmadı.");
-        }
+        var newCategoryId = await _categoryService.CreateAsync(dto);
 
-        var category = new Category
-        {
-            Id = Guid.NewGuid(),
-            Name = dto.Name,
-            ParentCategoryId = dto.ParentCategoryId
-        };
+        var createdCategory = await _categoryService.GetByIdAsync(newCategoryId);
 
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, MapToDto(category));
+        return CreatedAtAction(nameof(GetAllCategories), new { id = newCategoryId }, createdCategory);
     }
 
-    // PUT: api/Category/{id}
+    // PUT: api/category/{id}
     [HttpPut("{id}")]
-    [Authorize(Policy = "EditCategory")]
+    [Authorize(Policy = "Category.Update")]
     public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] CategoryCreateDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var category = await _context.Categories.FindAsync(id);
-        if (category == null)
+        try
+        {
+            await _categoryService.UpdateAsync(id, dto);
+        }
+        catch (KeyNotFoundException)
+        {
             return NotFound("Kateqoriya tapılmadı.");
-
-        if (dto.ParentCategoryId != null && dto.ParentCategoryId != id)
-        {
-            var parentCategory = await _context.Categories.FindAsync(dto.ParentCategoryId);
-            if (parentCategory == null)
-                return BadRequest("Parent kateqoriya tapılmadı.");
         }
-        else if (dto.ParentCategoryId == id)
+        catch (InvalidOperationException ex)
         {
-            return BadRequest("Bir kateqoriya özünü parent edə bilməz.");
+            return BadRequest(ex.Message);
         }
-
-        category.Name = dto.Name;
-        category.ParentCategoryId = dto.ParentCategoryId;
-
-        await _context.SaveChangesAsync();
 
         return NoContent();
     }
 
-    // DELETE: api/Category/{id}
+    // DELETE: api/category/{id} (Soft Delete)
     [HttpDelete("{id}")]
-    [Authorize(Policy = "DeleteCategory")]
-    public async Task<IActionResult> DeleteCategory(Guid id)
+    [Authorize(Policy = "Category.Delete")]
+    public async Task<IActionResult> SoftDeleteCategory(Guid id)
     {
-        var category = await _context.Categories
-            .Include(c => c.SubCategories)
-            .FirstOrDefaultAsync(c => c.Id == id);
-
-        if (category == null)
+        try
+        {
+            await _categoryService.SoftDeleteAsync(id);
+        }
+        catch (KeyNotFoundException)
+        {
             return NotFound("Kateqoriya tapılmadı.");
-
-        if (category.SubCategories.Any())
-            return BadRequest("Alt kateqoriyaları olan kateqoriyanı silmək olmaz.");
-
-        _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
 
         return NoContent();
     }
 
-    private CategoryDto MapToDto(Category category)
+    // POST: api/category/bulk-delete
+    [HttpPost("bulk-delete")]
+    [Authorize(Policy = "Category.Delete")]
+    public async Task<IActionResult> BulkDelete([FromBody] List<Guid> ids)
     {
-        return new CategoryDto
-        {
-            Id = category.Id,
-            Name = category.Name,
-            ParentCategoryId = category.ParentCategoryId,
-            SubCategories = category.SubCategories?.Select(MapToDto).ToList() ?? new()
-        };
+        var result = await _categoryService.BulkSoftDeleteAsync(ids);
+        return Ok(new { Success = result });
+    }
+
+    // GET: api/category/tree
+    [HttpGet("tree")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetCategoryTree()
+    {
+        var tree = await _categoryService.GetCategoryTreeAsync();
+        return Ok(tree);
     }
 }

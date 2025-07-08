@@ -3,40 +3,116 @@ using MiniECommerce.Application.Abstracts.Repositories;
 using MiniECommerce.Application.Abstracts.Services;
 using MiniECommerce.Application.DTOs.CategoryDto;
 using MiniECommerce.Domain.Entities;
+using MiniECommerce.Persistence.Contexts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace MiniECommerce.Persistence.Services;
+
 public class CategoryService : ICategoryService
 {
-    private readonly IRepository<Category> _categoryRepository;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly MiniECommerceDbContext _dbContext;
 
-    public CategoryService(IRepository<Category> categoryRepository)
+    public CategoryService(ICategoryRepository categoryRepository, MiniECommerceDbContext dbContext)
     {
         _categoryRepository = categoryRepository;
+        _dbContext = dbContext;  // Burada DbContext-in instance-ını saxlayırıq
     }
 
-    public async Task<List<CategoryDto>> GetAllAsync()
+    public async Task<(List<CategoryDto> Items, int TotalCount)> GetAllAsync(
+        int pageNumber,
+        int pageSize,
+        string? sortBy,
+        bool sortDesc,
+        string? search)
     {
-        var categories = await _categoryRepository
-            .GetAllFiltered(
-                predicate: c => c.ParentCategoryId == null,
-                include: new System.Linq.Expressions.Expression<Func<Category, object>>[] { c => c.SubCategories })
+        var query = _categoryRepository.GetAllIncludingSubCategories();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(c => c.Name.Contains(search));
+        }
+
+        query = (sortBy?.ToLower()) switch
+        {
+            "name" => sortDesc ? query.OrderByDescending(c => c.Name) : query.OrderBy(c => c.Name),
+            "createdat" => sortDesc ? query.OrderByDescending(c => c.CreatedAt) : query.OrderBy(c => c.CreatedAt),
+            _ => query.OrderBy(c => c.Name)
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var categories = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
 
-        return categories.Select(MapToDto).ToList();
+        var dtos = categories.Select(MapToDto).ToList();
+
+        return (dtos, totalCount);
     }
 
+    public async Task<CategoryStatsDto> GetStatsAsync(Guid categoryId)
+    {
+        var category = await _categoryRepository.GetByIdAsync(categoryId);
+        if (category == null || category.IsDeleted)
+            throw new Exception("Category not found.");
+
+        var subCategoriesCount = await _categoryRepository.GetSubCategoriesCountAsync(categoryId);
+        var productsCount = await _categoryRepository.GetProductsCountByCategoryAsync(categoryId);
+
+        return new CategoryStatsDto
+        {
+            CategoryId = categoryId,
+            SubCategoriesCount = subCategoriesCount,
+            ProductsCount = productsCount
+        };
+    }
     public async Task<CategoryDto?> GetByIdAsync(Guid id)
     {
-        var category = await _categoryRepository
-            .GetByFiltered(
-                predicate: c => c.Id == id,
-                include: new System.Linq.Expressions.Expression<Func<Category, object>>[] { c => c.SubCategories })
-            .FirstOrDefaultAsync();
+        var category = await _categoryRepository.GetByIdWithSubCategoriesAsync(id);
 
-        if (category == null)
+        if (category == null || category.IsDeleted)
             return null;
 
         return MapToDto(category);
     }
+
+    public async Task<bool> BulkSoftDeleteAsync(List<Guid> ids)
+    {
+        var categories = await _categoryRepository.GetAll()
+            .Where(c => ids.Contains(c.Id) && !c.IsDeleted)
+            .ToListAsync();
+
+        foreach (var category in categories)
+        {
+            var subCount = await _categoryRepository.GetSubCategoriesCountAsync(category.Id);
+            if (subCount > 0) continue;
+
+            category.IsDeleted = true;
+            category.DeletedAt = DateTime.UtcNow;
+        }
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+    }
+
+
+    public async Task<List<CategoryDto>> GetCategoryTreeAsync()
+    {
+        var rootCategories = await _categoryRepository.GetAllIncludingSubCategories()
+            .Where(c => c.ParentCategoryId == null && !c.IsDeleted)
+            .ToListAsync();
+
+        var dtoList = rootCategories.Select(MapToDto).ToList();
+        return dtoList;
+    }
+
+
 
     public async Task<Guid> CreateAsync(CategoryCreateDto dto)
     {
@@ -44,7 +120,8 @@ public class CategoryService : ICategoryService
         {
             Id = Guid.NewGuid(),
             Name = dto.Name,
-            ParentCategoryId = dto.ParentCategoryId
+            ParentCategoryId = dto.ParentCategoryId,
+            IsDeleted = false
         };
 
         await _categoryRepository.AddAsync(category);
@@ -56,7 +133,7 @@ public class CategoryService : ICategoryService
     public async Task UpdateAsync(Guid id, CategoryCreateDto dto)
     {
         var category = await _categoryRepository.GetByIdAsync(id);
-        if (category == null)
+        if (category == null || category.IsDeleted)
             throw new Exception("Category not found.");
 
         category.Name = dto.Name;
@@ -66,16 +143,19 @@ public class CategoryService : ICategoryService
         await _categoryRepository.SaveChangeAsync();
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task SoftDeleteAsync(Guid id)
     {
-        var category = await _categoryRepository.GetByIdAsync(id);
-        if (category == null)
+        var category = await _categoryRepository.GetByIdWithSubCategoriesAsync(id);
+        if (category == null || category.IsDeleted)
             throw new Exception("Category not found.");
 
-        if (category.SubCategories.Any())
-            throw new Exception("Cannot delete category with subcategories.");
+        if (category.SubCategories.Any(sc => !sc.IsDeleted))
+            throw new Exception("Cannot delete category with active subcategories.");
 
-        _categoryRepository.Delete(category);
+        category.IsDeleted = true;
+        category.DeletedAt = DateTime.UtcNow;
+
+        _categoryRepository.Update(category);
         await _categoryRepository.SaveChangeAsync();
     }
 
@@ -86,7 +166,74 @@ public class CategoryService : ICategoryService
             Id = category.Id,
             Name = category.Name,
             ParentCategoryId = category.ParentCategoryId,
-            SubCategories = category.SubCategories?.Select(MapToDto).ToList() ?? new List<CategoryDto>()
+            SubCategories = category.SubCategories?
+                .Where(sc => !sc.IsDeleted)
+                .Select(MapToDto)
+                .ToList() ?? new List<CategoryDto>()
         };
     }
+
+    public async Task<(List<CategoryDto> items, int totalCount)> GetFilteredAsync(
+    int pageNumber,
+    int pageSize,
+    string sortBy,
+    bool sortDesc,
+    string? search,
+    bool flat)
+    {
+        IQueryable<Category> query = _dbContext.Categories.Where(c => !c.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(c => c.Name.Contains(search));
+        }
+
+        if (flat)
+        {
+            query = sortBy switch
+            {
+                "Name" => sortDesc ? query.OrderByDescending(c => c.Name) : query.OrderBy(c => c.Name),
+                _ => query.OrderBy(c => c.Name)
+            };
+
+            var totalItems = await query.CountAsync();
+            var categories = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var dtos = categories.Select(c => new CategoryDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                ParentCategoryId = c.ParentCategoryId,
+                SubCategories = new List<CategoryDto>()
+            }).ToList();
+
+            return (dtos, totalItems);
+        }
+        else
+        {
+            query = query.Where(c => c.ParentCategoryId == null);
+
+            query = sortBy switch
+            {
+                "Name" => sortDesc ? query.OrderByDescending(c => c.Name) : query.OrderBy(c => c.Name),
+                _ => query.OrderBy(c => c.Name)
+            };
+
+            var totalItems = await query.CountAsync();
+
+            var parentCategories = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(c => c.SubCategories.Where(sc => !sc.IsDeleted))
+                .ToListAsync();
+
+            var dtos = parentCategories.Select(MapToDto).ToList();
+
+            return (dtos, totalItems);
+        }
+    }
+
 }
