@@ -10,4 +10,7 @@ public interface IProductService
 
     Task UpdateAsync(Guid id, ProductUpdateDto dto);
     Task DeleteAsync(Guid id);
+    Task<List<ProductDetailDto>> GetProductsByUserIdAsync(Guid userId);
+
+
 }

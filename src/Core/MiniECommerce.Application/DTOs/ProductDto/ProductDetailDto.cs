@@ -10,4 +10,5 @@ public class ProductDetailDto
     public string? CategoryName { get; set; }
     public List<string> ImageUrls { get; set; } = new();
     public Guid OwnerId { get; set; }
+    public string? OwnerName { get; set; }
 }

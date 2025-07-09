@@ -67,7 +67,12 @@ public class ProductService : IProductService
     public async Task<IEnumerable<ProductListDto>> GetAllAsync()
     {
         var products = _productRepository.GetAllFiltered(
-            include: new Expression<Func<Product, object>>[] { p => p.Category, p => p.Images },
+            include: new Expression<Func<Product, object>>[]
+            {
+            p => p.Category,
+            p => p.Images,
+            p => p.Owner
+            },
             isTracking: false);
 
         var list = await products.Select(p => new ProductListDto
@@ -77,11 +82,14 @@ public class ProductService : IProductService
             Description = p.Description,
             Price = p.Price,
             CategoryName = p.Category.Name,
-            ImageUrl = p.Images.Select(i => i.ImageUrl).ToList()
+            ImageUrl = p.Images.Select(i => i.ImageUrl).ToList(),
+            OwnerId = p.OwnerId,
+            OwnerName = p.Owner != null ? p.Owner.UserName : "Unknown"
         }).ToListAsync();
 
         return list;
     }
+
 
     public async Task<ProductDetailDto?> GetByIdAsync(Guid id)
     {
@@ -102,9 +110,38 @@ public class ProductService : IProductService
             CategoryId = product.CategoryId,
             CategoryName = product.Category.Name,
             ImageUrls = product.Images.Select(i => i.ImageUrl).ToList(),
-            OwnerId = product.OwnerId
+            OwnerId = product.OwnerId,
+            OwnerName = product.Owner?.UserName ?? "Unknown" 
         };
+
     }
+
+    public async Task<List<ProductDetailDto>> GetProductsByUserIdAsync(Guid userId)
+    {
+        var query = _productRepository.GetByFiltered(
+            predicate: p => p.OwnerId == userId,
+            include: new Expression<Func<Product, object>>[] { p => p.Category, p => p.Images, p => p.Owner },
+            isTracking: false);
+        var productList = await query.ToListAsync();
+
+        var result = productList.Select(p => new ProductDetailDto
+        {
+            Id = p.Id,
+            Title = p.Title,
+            Description = p.Description,
+            Price = p.Price,
+            CategoryId = p.CategoryId,
+            CategoryName = p.Category?.Name ?? "N/A",
+            ImageUrls = p.Images.Select(i => i.ImageUrl).ToList(),
+            OwnerId = p.OwnerId,
+            OwnerName = p.Owner != null ? p.Owner.UserName : "Unknown"
+        }).ToList();
+
+        return result;
+    }
+
+
+
 
     public async Task UpdateAsync(Guid id, ProductUpdateDto dto)
     {

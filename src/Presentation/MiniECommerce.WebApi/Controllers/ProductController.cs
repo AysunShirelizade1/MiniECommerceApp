@@ -59,6 +59,20 @@ public class ProductController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("myproducts")]
+    [Authorize]  // yalnız authorized istifadəçilər
+    public async Task<IActionResult> GetMyProducts()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+            return Unauthorized();
+
+        var userId = Guid.Parse(userIdClaim.Value);
+        var products = await _productService.GetProductsByUserIdAsync(userId);
+
+        return Ok(products);
+    }
+
     // Only Product.Delete permission holders
     [HttpDelete("{id}")]
     [Authorize(Policy = "Product.Delete")]
