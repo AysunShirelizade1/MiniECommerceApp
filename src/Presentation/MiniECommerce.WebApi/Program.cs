@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using MiniECommerce.Domain.Entities;
 using MiniECommerce.Persistence;
 using MiniECommerce.Persistence.Contexts;
+using MiniECommerce.Persistence.Helpers;
 using MiniECommerce.Persistence.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -99,6 +100,9 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("Order.Update", policy =>
         policy.Requirements.Add(new PermissionRequirement("Order.Update")));
+    options.AddPolicy("Order.Cancel", policy =>
+    policy.Requirements.Add(new PermissionRequirement("Order.Cancel")));
+
 
 
     // Image icazələri
@@ -164,12 +168,12 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-// DB initializasiyası
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<MiniECommerceDbContext>();
-//    await DbInitializer.InitializeAsync(context);
-//}
+//// DB initializasiyası
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<MiniECommerceDbContext>();
+    await DbInitializer.InitializeAsync(context);
+}
 
 //  Pipeline
 if (app.Environment.IsDevelopment())

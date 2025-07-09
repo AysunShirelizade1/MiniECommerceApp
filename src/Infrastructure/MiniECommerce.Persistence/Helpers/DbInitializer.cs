@@ -1,148 +1,155 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using MiniECommerce.Domain.Entities;
-//using MiniECommerce.Persistence.Contexts;
+﻿using Microsoft.EntityFrameworkCore;
+using MiniECommerce.Domain.Entities;
+using MiniECommerce.Persistence.Contexts;
 
-//namespace MiniECommerce.Persistence.Helpers;
+namespace MiniECommerce.Persistence.Helpers;
 
-//public static class DbInitializer
-//{
-//    public static async Task InitializeAsync(MiniECommerceDbContext context)
-//    {
-//        // DB yoxlanışı və yaranması
-//        await context.Database.EnsureCreatedAsync();
+public static class DbInitializer
+{
+    public static async Task InitializeAsync(MiniECommerceDbContext context)
+    {
+        await AddRolesAsync(context);
+        await AddPermissionsAsync(context);
+        await AssignPermissionsToRolesAsync(context);
+    }
 
-//        // Rolların əlavə olunması
-//        if (!context.Roles.Any())
-//        {
-//            context.Roles.AddRange(
-//                new AppRole { Name = "Admin", NormalizedName = "ADMIN" },
-//                new AppRole { Name = "Seller", NormalizedName = "SELLER" },
-//                new AppRole { Name = "Moderator", NormalizedName = "MODERATOR" },
-//                new AppRole { Name = "Buyer", NormalizedName = "BUYER" }
-//            );
-//            await context.SaveChangesAsync();
-//        }
+    private static async Task AddRolesAsync(MiniECommerceDbContext context)
+    {
+        var roleNames = new[] { "Admin", "Seller", "Moderator", "Buyer" };
 
-//        // İcazələrin əlavə olunması (Permissions)
-//        if (!context.Permissions.Any())
-//        {
-//            context.Permissions.AddRange(
-//                // Product icazələri
-//                new Permission { Name = "Product.Create" },
-//                new Permission { Name = "Product.Read" },
-//                new Permission { Name = "Product.Update" },
-//                new Permission { Name = "Product.Delete" },
+        foreach (var roleName in roleNames)
+        {
+            if (!context.Roles.Any(r => r.NormalizedName == roleName.ToUpper()))
+            {
+                var newRole = new AppRole
+                {
+                    Id = Guid.NewGuid(),
+                    Name = roleName,
+                    NormalizedName = roleName.ToUpper()
+                };
 
-//                // Category icazələri
-//                new Permission { Name = "Category.Create" },
-//                new Permission { Name = "Category.Read" },
-//                new Permission { Name = "Category.Update" },
-//                new Permission { Name = "Category.Delete" },
+                await context.Roles.AddAsync(newRole);
+            }
+        }
 
-//                // Order icazələri
-//                new Permission { Name = "Order.Create" },
-//                new Permission { Name = "Order.Read" },
-//                new Permission { Name = "Order.Update" },
+        await context.SaveChangesAsync();
+    }
 
-//                // Image icazələri
-//                new Permission { Name = "Image.Create" },
-//                new Permission { Name = "Image.Update" },
-//                new Permission { Name = "Image.Delete" },
 
-//                // Review icazələri
-//                new Permission { Name = "Review.Create" },
-//                new Permission { Name = "Review.Delete" },
+    private static async Task AddPermissionsAsync(MiniECommerceDbContext context)
+    {
+        var permissionNames = new[]
+        {
+            // Product
+            "Product.Create", "Product.Read", "Product.Update", "Product.Delete",
 
-//                // User və Role idarəetmə icazələri
-//                new Permission { Name = "User.Manage" },
-//                new Permission { Name = "Role.Manage" },
+            // Order
+            "Order.Read", "Order.Cancel",
 
-//                // Statistikalar və idarə paneli
-//                new Permission { Name = "Analytics.View" }
-//            );
-//            await context.SaveChangesAsync();
-//        }
+            // Image
+            "Image.Create", "Image.Update", "Image.Delete",
 
-//        // RolePermissions münasibətlərinin əlavə olunması
-//        if (!context.RolePermissions.Any())
-//        {
-//            var adminRole = context.Roles.First(r => r.Name == "Admin");
-//            var sellerRole = context.Roles.First(r => r.Name == "Seller");
-//            var moderatorRole = context.Roles.First(r => r.Name == "Moderator");
-//            var buyerRole = context.Roles.First(r => r.Name == "Buyer");
+            // Review
+            "Review.Create", "Review.Delete"
+        };
 
-//            var allPermissions = context.Permissions.ToList();
+        foreach (var name in permissionNames)
+        {
+            if (!context.Permissions.Any(p => p.Name == name))
+            {
+                await context.Permissions.AddAsync(new Permission
+                {
+                    Id = Guid.NewGuid(),
+                    Name = name
+                });
+            }
+        }
 
-//            // Admin: Bütün icazələr
-//            foreach (var permission in allPermissions)
-//            {
-//                context.RolePermissions.Add(new RolePermission
-//                {
-//                    RoleId = adminRole.Id,
-//                    PermissionId = permission.Id
-//                });
-//            }
+        await context.SaveChangesAsync();
+    }
 
-//            // Seller: Məhsullar və sifarişlərin idarəsi (sahib olduğu məhsullarla bağlı)
-//            var sellerPermissions = context.Permissions.Where(p =>
-//                p.Name.StartsWith("Product") ||
-//                p.Name.StartsWith("Order.Read") ||
-//                p.Name == "Image.Create" ||
-//                p.Name == "Image.Update" ||
-//                p.Name == "Image.Delete" ||
-//                p.Name == "Review.Create" ||
-//                p.Name == "Review.Delete"
-//            ).ToList();
+    private static async Task AssignPermissionsToRolesAsync(MiniECommerceDbContext context)
+    {
+        Console.WriteLine("=== AssignPermissionsToRolesAsync başladı ===");
 
-//            foreach (var permission in sellerPermissions)
-//            {
-//                context.RolePermissions.Add(new RolePermission
-//                {
-//                    RoleId = sellerRole.Id,
-//                    PermissionId = permission.Id
-//                });
-//            }
+        // Bu 2 blokun əlavə olunması vacibdir!
+        var dbRoles = await context.Roles.ToListAsync();
+        var roles = dbRoles.ToDictionary(r => r.Name!.ToLower(), r => r.Id);
+        Console.WriteLine($"Toplam {roles.Count} rol tapıldı:");
+        foreach (var r in roles)
+        {
+            Console.WriteLine($" - {r.Key} => {r.Value}");
+        }
 
-//            // Moderator: Review və User idarəetməsi, məhsulların və kateqoriyaların oxunması və yenilənməsi
-//            var moderatorPermissions = context.Permissions.Where(p =>
-//                p.Name == "Review.Delete" ||
-//                p.Name == "User.Manage" ||
-//                p.Name == "Category.Read" ||
-//                p.Name == "Category.Update" ||
-//                p.Name == "Product.Read" ||
-//                p.Name == "Product.Update"
-//            ).ToList();
+        var dbPermissions = await context.Permissions.ToListAsync();
+        var permissions = dbPermissions.ToDictionary(p => p.Name!, p => p.Id);
+        Console.WriteLine($"Toplam {permissions.Count} permission tapıldı.");
 
-//            foreach (var permission in moderatorPermissions)
-//            {
-//                context.RolePermissions.Add(new RolePermission
-//                {
-//                    RoleId = moderatorRole.Id,
-//                    PermissionId = permission.Id
-//                });
-//            }
+        void Assign(string roleName, IEnumerable<string> permissionNames)
+        {
+            Console.WriteLine($"-> Rol təyini: {roleName}");
 
-//            // Buyer: Məhsulların oxunması və sifarişlərin yaradılması, rəylərin yaradılması
-//            var buyerPermissions = context.Permissions.Where(p =>
-//                p.Name == "Product.Read" ||
-//                p.Name == "Order.Create" ||
-//                p.Name == "Review.Create"
-//            ).ToList();
+            var roleKey = roleName.ToLower();
 
-//            foreach (var permission in buyerPermissions)
-//            {
-//                context.RolePermissions.Add(new RolePermission
-//                {
-//                    RoleId = buyerRole.Id,
-//                    PermissionId = permission.Id
-//                });
-//            }
+            if (!roles.ContainsKey(roleKey))
+            {
+                Console.WriteLine($"!!! ROL TAPILMADI: {roleName}");
+                throw new Exception($"Role '{roleName}' not found in the database.");
+            }
 
-//            await context.SaveChangesAsync();
-//        }
-//    }
-//}
+            foreach (var perm in permissionNames)
+            {
+                if (permissions.TryGetValue(perm, out var permId))
+                {
+                    bool alreadyExists = context.RolePermissions.Any(rp =>
+                        rp.RoleId == roles[roleKey] && rp.PermissionId == permId);
+
+                    if (!alreadyExists)
+                    {
+                        Console.WriteLine($" + Permission əlavə olunur: {perm} → {roleName}");
+                        context.RolePermissions.Add(new RolePermission
+                        {
+                            RoleId = roles[roleKey],
+                            PermissionId = permId
+                        });
+                    }
+                    else
+                    {
+                        Console.WriteLine($" = Permission artıq var: {perm} → {roleName}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"!!! Permission tapılmadı: {perm}");
+                }
+            }
+        }
+
+        Assign("Admin", permissions.Keys);
+        Assign("Seller", new[]
+        {
+        "Product.Create", "Product.Read", "Product.Update", "Product.Delete",
+        "Order.Read", "Order.Cancel",
+        "Image.Create", "Image.Update", "Image.Delete",
+        "Review.Create", "Review.Delete"
+    });
+
+        Assign("Moderator", new[]
+        {
+        "Product.Read",
+        "Order.Read",
+        "Review.Delete"
+    });
+
+        Assign("Buyer", new[]
+        {
+        "Order.Read",
+        "Order.Cancel",
+        "Review.Create"
+    });
+
+        await context.SaveChangesAsync();
+
+        Console.WriteLine("=== AssignPermissionsToRolesAsync tamamlandı ===");
+    }
+}
